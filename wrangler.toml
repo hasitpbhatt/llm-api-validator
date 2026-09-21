@@ -1,0 +1,19 @@
+# LLM API Validator — Phase-2 CORS proxy (Cloudflare Worker)
+# Deploy: npx wrangler deploy   (from this directory)
+# The static page (index.html) deploys separately to Cloudflare Pages.
+
+name = "llm-api-validator-proxy"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Fallback API base when the request omits ?target=. Leave empty to require it.
+DEFAULT_TARGET = ""
+# Optional server-side key — used ONLY when a request has no X-User-Token header.
+# For BYOK usage, leave empty: each user's token travels per-request, nothing stored.
+# API_KEY = ""
+# Optional allowlist, e.g. "https://api.openai.com,https://api.anthropic.com".
+# ALLOWED_TARGETS = ""
+
+[dev]
+port = 8787

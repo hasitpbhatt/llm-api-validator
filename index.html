@@ -113,6 +113,22 @@
         Fetch models
       </button>
       <p id="fetchHint" class="text-[11px] text-muted mt-1.5"></p>
+
+      <details class="mt-3 text-xs border border-line rounded p-2.5">
+        <summary class="cursor-pointer font-medium text-muted">Proxy · Phase 2 (only if CORS blocks)</summary>
+        <label class="block text-xs text-muted mt-2 mb-1" for="proxyMode">Proxy mode</label>
+        <select id="proxyMode"
+          class="w-full text-xs bg-ink border border-line rounded px-2 py-1.5 focus:outline-none focus:border-primary">
+          <option value="auto">Auto — direct first, proxy on CORS block</option>
+          <option value="direct">Direct only — never use proxy</option>
+          <option value="proxy">Always use proxy</option>
+        </select>
+        <label class="block text-xs text-muted mt-2 mb-1" for="proxyUrl">Worker URL</label>
+        <input id="proxyUrl" type="url" inputmode="url" spellcheck="false"
+          placeholder="https://llm-api-validator-proxy.&lt;you&gt;.workers.dev"
+          class="mono w-full text-xs bg-ink border border-line rounded px-2 py-1.5 focus:outline-none focus:border-primary" />
+        <p class="text-[11px] text-muted mt-1.5">Engaged only on a CORS block (or Always mode). Token is forwarded per-request, never stored server-side. Deploy with <span class="mono">npx wrangler deploy</span>.</p>
+      </details>
     </section>
 
     <section aria-labelledby="modelH">
@@ -162,8 +178,8 @@
   <main class="flex-1 flex flex-col min-w-0 min-h-0">
     <div id="corsBanner" class="hidden shrink-0 mx-4 mt-3 text-xs border border-amber-500/40 bg-amber-500/10 rounded p-3" role="alert">
       <strong>Connection blocked by the browser (CORS).</strong>
-      The API didn't allow this origin. This is expected for most hosted APIs on Phase 1.
-      You can still type a model ID manually — if chat also fails, say the word and we'll add the Phase-2 Worker proxy.
+      The API didn't allow this origin. You can still type a model ID manually — if chat also fails,
+      paste your Worker URL under Proxy in the sidebar (Auto mode retries through it).
       <button id="corsDismiss" class="ml-2 underline">Dismiss</button>
     </div>
 
@@ -195,6 +211,7 @@
     config: {
       baseUrl: '', token: '', apiFormat: 'openai',
       customModelsPath: '/models', customChatPath: '/chat',
+      proxyMode: 'auto', proxyUrl: '',
       model: '', systemPrompt: 'You are a helpful assistant.',
       temperature: 0.7, maxTokens: 2048, topP: 1.0, stream: true
     },
@@ -212,6 +229,7 @@
     apiFormat: $('apiFormat'), customEndpoints: $('customEndpoints'),
     customModelsPath: $('customModelsPath'), customChatPath: $('customChatPath'),
     fetchModelsBtn: $('fetchModelsBtn'), fetchHint: $('fetchHint'),
+    proxyMode: $('proxyMode'), proxyUrl: $('proxyUrl'),
     modelInput: $('modelInput'), modelList: $('modelList'),
     systemPrompt: $('systemPrompt'),
     temp: $('temp'), tempVal: $('tempVal'),
@@ -296,6 +314,58 @@
   }
   function isCorsTypeError(err) {
     return err instanceof TypeError && /failed to fetch|networkerror|load failed/i.test(err.message || '');
+  }
+
+  /* ── Request routing: direct first, proxy only on CORS block (or Always mode) ── */
+  var lastRoute = 'direct'; // 'direct' | 'proxy' — set by routeFetch, read for status text
+  function proxiedUrl(proxyBase, apiBase, fullUrl) {
+    var base = normBase(apiBase);
+    var path = fullUrl.slice(base.length) || '/';
+    var sep = path.indexOf('?') === -1 ? '?' : '&';
+    return normBase(proxyBase) + '/api' + path + sep + 'target=' + encodeURIComponent(base);
+  }
+  function routeFetch(fullUrl, init, label) {
+    var cfg = state.config;
+    var mode = cfg.proxyMode || 'auto';
+    var proxyBase = normBase(cfg.proxyUrl);
+    init = init || {};
+
+    var attemptDirect = function () {
+      lastRoute = 'direct';
+      debug({ step: label || 'request', route: 'direct', url: fullUrl });
+      return fetch(fullUrl, init);
+    };
+    var attemptProxy = function (reason) {
+      if (!proxyBase) return Promise.reject(new Error('CORS_BLOCKED_NO_PROXY'));
+      lastRoute = 'proxy';
+      var out = {};
+      Object.keys(init.headers || {}).forEach(function (k) {
+        if (/^authorization$/i.test(k) || /^x-api-key$/i.test(k)) return;
+        out[k] = init.headers[k];
+      });
+      if (cfg.token) out['X-User-Token'] = cfg.token;
+      var pUrl = proxiedUrl(proxyBase, cfg.baseUrl, fullUrl);
+      debug({ step: label || 'request', route: 'proxy', url: pUrl, reason: reason });
+      var pInit = { method: init.method, headers: out };
+      if (init.body !== undefined) pInit.body = init.body;
+      if (init.signal) pInit.signal = init.signal;
+      return fetch(pUrl, pInit);
+    };
+
+    if (mode === 'proxy') {
+      if (!proxyBase) return Promise.reject(new Error('Proxy mode selected but no Worker URL set'));
+      return attemptProxy('mode=always-proxy');
+    }
+    if (mode === 'direct') return attemptDirect();
+    // auto: direct first, proxy only when the browser blocks
+    return attemptDirect().catch(function (err) {
+      if (isCorsTypeError(err)) {
+        if (!proxyBase) throw err; // no proxy configured — caller shows CORS banner
+        toast('Direct request blocked (CORS) — retrying via proxy…', 'info');
+        return attemptProxy('cors-fallback');
+      }
+      throw err;
+    });
   }
 
   /* ═══════════ adapters ═══════════ */
@@ -541,8 +611,7 @@
         return;
       }
       var url = joinUrl(base, paths[i]);
-      debug({ step: 'GET models', url: url, format: cfg.apiFormat });
-      fetch(url, { method: 'GET', headers: adapter.headers(cfg.token) })
+      routeFetch(url, { method: 'GET', headers: adapter.headers(cfg.token) }, 'GET models')
         .then(function (res) {
           if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
           return res.json();
@@ -552,8 +621,9 @@
           if (!models.length) throw new Error('No models in response — check inspector for shape');
           populateModels(models);
           setFetching(false);
-          setStatus('ok', 'Connected · ' + models.length + ' models');
-          el.fetchHint.textContent = models.length + ' models loaded from ' + url;
+          var via = lastRoute === 'proxy' ? ' via proxy' : '';
+          setStatus('ok', 'Connected' + via + ' · ' + models.length + ' models');
+          el.fetchHint.textContent = models.length + ' models loaded' + via + ' from ' + url;
           toast(models.length + ' models loaded', 'ok');
           if (!cfg.model || models.indexOf(cfg.model) === -1) {
             cfg.model = models[0]; el.modelInput.value = models[0]; save();
@@ -631,12 +701,12 @@
     aborter = new AbortController();
     debug({ step: 'POST chat', url: url, format: cfg.apiFormat, body: body });
 
-    fetch(url, {
+    routeFetch(url, {
       method: 'POST',
       headers: adapter.headers(cfg.token),
       body: JSON.stringify(body),
       signal: aborter.signal
-    }).then(function (res) {
+    }, 'POST chat').then(function (res) {
       if (!res.ok) {
         return res.text().then(function (t) {
           throw new Error('HTTP ' + res.status + ' — ' + t.slice(0, 300));
@@ -695,7 +765,7 @@
     conv.messages.push({ id: id, role: 'assistant', content: content, ts: new Date().toISOString(), error: !!isError });
     save();
     setBusy(false);
-    if (!isError) setStatus('ok', 'Connected · ' + state.config.model);
+    if (!isError) setStatus('ok', 'Connected' + (lastRoute === 'proxy' ? ' via proxy' : '') + ' · ' + state.config.model);
     // replace streaming node with final node (adds Copy button)
     var final = bubble('assistant', content, { id: id });
     node.replaceWith(final);
@@ -728,6 +798,8 @@
     });
     el.customModelsPath.addEventListener('input', function () { cfg.customModelsPath = el.customModelsPath.value; sync(); });
     el.customChatPath.addEventListener('input', function () { cfg.customChatPath = el.customChatPath.value; sync(); });
+    el.proxyMode.addEventListener('change', function () { cfg.proxyMode = el.proxyMode.value; sync(); });
+    el.proxyUrl.addEventListener('input', function () { cfg.proxyUrl = el.proxyUrl.value.trim(); sync(); });
     el.modelInput.addEventListener('input', function () { cfg.model = el.modelInput.value.trim(); sync(); });
     el.systemPrompt.addEventListener('input', function () { cfg.systemPrompt = el.systemPrompt.value; sync(); });
 
@@ -807,6 +879,8 @@
     el.customEndpoints.classList.toggle('hidden', el.apiFormat.value !== 'custom');
     el.customModelsPath.value = cfg.customModelsPath || '/models';
     el.customChatPath.value = cfg.customChatPath || '/chat';
+    el.proxyMode.value = cfg.proxyMode || 'auto';
+    el.proxyUrl.value = cfg.proxyUrl || '';
     el.modelInput.value = cfg.model || '';
     el.systemPrompt.value = cfg.systemPrompt || '';
     el.temp.value = cfg.temperature;
