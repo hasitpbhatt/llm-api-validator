@@ -93,7 +93,8 @@
           class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 pr-14 focus:outline-none focus:border-primary" />
         <button id="tokenPeek" class="absolute right-1 top-1 text-[11px] px-2 py-1 rounded hover:bg-line text-muted" type="button">Show</button>
       </div>
-      <p class="text-[11px] text-muted mt-1">Kept in this browser only (localStorage). Never sent anywhere except your API.</p>
+      <p class="text-[11px] text-muted mt-1">Stored only in this browser (localStorage). Sent straight to your API — in proxy mode your own proxy forwards it per request and never stores it.
+        <button id="forgetToken" type="button" class="underline hover:text-primary">Forget token</button></p>
 
       <label class="block text-xs text-muted mt-3 mb-1" for="apiFormat">API format</label>
       <select id="apiFormat"
@@ -115,7 +116,7 @@
       <p id="fetchHint" class="text-[11px] text-muted mt-1.5"></p>
 
       <details class="mt-3 text-xs border border-line rounded p-2.5">
-        <summary class="cursor-pointer font-medium text-muted">Proxy · Phase 2 (only if CORS blocks)</summary>
+        <summary class="cursor-pointer font-medium text-muted">Proxy · same-origin (only if CORS blocks)</summary>
         <label class="block text-xs text-muted mt-2 mb-1" for="proxyMode">Proxy mode</label>
         <select id="proxyMode"
           class="w-full text-xs bg-ink border border-line rounded px-2 py-1.5 focus:outline-none focus:border-primary">
@@ -123,11 +124,11 @@
           <option value="direct">Direct only — never use proxy</option>
           <option value="proxy">Always use proxy</option>
         </select>
-        <label class="block text-xs text-muted mt-2 mb-1" for="proxyUrl">Worker URL</label>
+        <label class="block text-xs text-muted mt-2 mb-1" for="proxyUrl">Proxy base override (optional)</label>
         <input id="proxyUrl" type="url" inputmode="url" spellcheck="false"
-          placeholder="https://llm-api-validator-proxy.&lt;you&gt;.workers.dev"
+          placeholder="Leave empty for same-origin /api"
           class="mono w-full text-xs bg-ink border border-line rounded px-2 py-1.5 focus:outline-none focus:border-primary" />
-        <p class="text-[11px] text-muted mt-1.5">Engaged only on a CORS block (or Always mode). Token is forwarded per-request, never stored server-side. Deploy with <span class="mono">npx wrangler deploy</span>.</p>
+        <p class="text-[11px] text-muted mt-1.5">Empty = same-origin Pages Function (<span class="mono">/api</span>). Fill only for a standalone Worker. Token is forwarded per-request, never stored server-side.</p>
       </details>
     </section>
 
@@ -178,8 +179,8 @@
   <main class="flex-1 flex flex-col min-w-0 min-h-0">
     <div id="corsBanner" class="hidden shrink-0 mx-4 mt-3 text-xs border border-amber-500/40 bg-amber-500/10 rounded p-3" role="alert">
       <strong>Connection blocked by the browser (CORS).</strong>
-      The API didn't allow this origin. You can still type a model ID manually — if chat also fails,
-      paste your Worker URL under Proxy in the sidebar (Auto mode retries through it).
+      The API didn't allow this origin. You can still type a model ID manually — chat auto-retries
+      through the same-origin proxy (<span class="mono">/api</span>).
       <button id="corsDismiss" class="ml-2 underline">Dismiss</button>
     </div>
 
@@ -225,7 +226,7 @@
   function $(id) { return document.getElementById(id); }
   var el = {
     sidebar: $('sidebar'), scrim: $('sidebarScrim'), sidebarToggle: $('sidebarToggle'),
-    apiBase: $('apiBase'), apiToken: $('apiToken'), tokenPeek: $('tokenPeek'),
+    apiBase: $('apiBase'), apiToken: $('apiToken'), tokenPeek: $('tokenPeek'), forgetToken: $('forgetToken'),
     apiFormat: $('apiFormat'), customEndpoints: $('customEndpoints'),
     customModelsPath: $('customModelsPath'), customChatPath: $('customChatPath'),
     fetchModelsBtn: $('fetchModelsBtn'), fetchHint: $('fetchHint'),
@@ -305,24 +306,43 @@
     catch (e) { el.debugBox.textContent = String(obj); }
   }
   function normBase(u) { return String(u || '').trim().replace(/\/+$/, ''); }
+  function trimmedToken() { return String(state.config.token || '').trim(); }
   function joinUrl(base, path) {
     base = normBase(base);
     if (!path) return base;
     if (/^https?:\/\//i.test(path)) return path;
     if (path.charAt(0) !== '/') path = '/' + path;
+    // base "…/v1" + path "/v1/chat/completions" must not become "…/v1/v1/…"
+    if (/\/v\d+$/.test(base) && /^\/v\d+(\/|$)/.test(path)) path = path.replace(/^\/v\d+/, '') || '/';
     return base + path;
   }
   function isCorsTypeError(err) {
     return err instanceof TypeError && /failed to fetch|networkerror|load failed/i.test(err.message || '');
   }
+  var HTTP_HELP = {
+    400: 'Bad request (400) — check the model ID and request shape',
+    401: 'Token rejected (401) — re-paste the key; make sure it belongs to this provider and base URL',
+    403: 'Access denied (403) — the key may not be allowed for this model or endpoint',
+    404: 'Endpoint not found (404) — check the base URL and model ID',
+    408: 'The API timed out (408) — try again',
+    429: 'Rate limited (429) — wait a moment or check your quota',
+    500: 'Provider server error (500) — retry shortly; the problem is on their side',
+    502: 'Bad gateway (502) — retry; the provider or proxy hiccuped',
+    503: 'Service unavailable (503) — provider is overloaded; retry shortly'
+  };
+  function friendlyHttp(status) {
+    return HTTP_HELP[status] || ('HTTP ' + status);
+  }
 
-  /* ── Request routing: direct first, proxy only on CORS block (or Always mode) ── */
+  /* ── Request routing: direct first, same-origin /api proxy only on CORS block (or Always mode) ── */
   var lastRoute = 'direct'; // 'direct' | 'proxy' — set by routeFetch, read for status text
   function proxiedUrl(proxyBase, apiBase, fullUrl) {
     var base = normBase(apiBase);
     var path = fullUrl.slice(base.length) || '/';
     var sep = path.indexOf('?') === -1 ? '?' : '&';
-    return normBase(proxyBase) + '/api' + path + sep + 'target=' + encodeURIComponent(base);
+    // Empty proxyBase = same-origin Pages Function (/api/...). Set proxyUrl only for a standalone Worker.
+    var prefix = proxyBase ? normBase(proxyBase) : '';
+    return prefix + '/api' + path + sep + 'target=' + encodeURIComponent(base);
   }
   function routeFetch(fullUrl, init, label) {
     var cfg = state.config;
@@ -336,14 +356,13 @@
       return fetch(fullUrl, init);
     };
     var attemptProxy = function (reason) {
-      if (!proxyBase) return Promise.reject(new Error('CORS_BLOCKED_NO_PROXY'));
       lastRoute = 'proxy';
       var out = {};
       Object.keys(init.headers || {}).forEach(function (k) {
         if (/^authorization$/i.test(k) || /^x-api-key$/i.test(k)) return;
         out[k] = init.headers[k];
       });
-      if (cfg.token) out['X-User-Token'] = cfg.token;
+      if (cfg.token) out['X-User-Token'] = trimmedToken();
       var pUrl = proxiedUrl(proxyBase, cfg.baseUrl, fullUrl);
       debug({ step: label || 'request', route: 'proxy', url: pUrl, reason: reason });
       var pInit = { method: init.method, headers: out };
@@ -353,15 +372,13 @@
     };
 
     if (mode === 'proxy') {
-      if (!proxyBase) return Promise.reject(new Error('Proxy mode selected but no Worker URL set'));
       return attemptProxy('mode=always-proxy');
     }
     if (mode === 'direct') return attemptDirect();
-    // auto: direct first, proxy only when the browser blocks
+    // auto: direct first, same-origin proxy only when the browser blocks
     return attemptDirect().catch(function (err) {
       if (isCorsTypeError(err)) {
-        if (!proxyBase) throw err; // no proxy configured — caller shows CORS banner
-        toast('Direct request blocked (CORS) — retrying via proxy…', 'info');
+        toast('Direct request blocked (CORS) — retrying via same-origin proxy…', 'info');
         return attemptProxy('cors-fallback');
       }
       throw err;
@@ -611,7 +628,7 @@
         return;
       }
       var url = joinUrl(base, paths[i]);
-      routeFetch(url, { method: 'GET', headers: adapter.headers(cfg.token) }, 'GET models')
+      routeFetch(url, { method: 'GET', headers: adapter.headers(trimmedToken()) }, 'GET models')
         .then(function (res) {
           if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
           return res.json();
@@ -684,7 +701,7 @@
     var adapter = adapters[cfg.apiFormat] || adapters.openai;
     var url = joinUrl(base, adapter.chatPath());
     var history = [{ role: 'system', content: cfg.systemPrompt }].concat(
-      conv.messages.filter(function (m) { return m.content; }).map(function (m) {
+      conv.messages.filter(function (m) { return m.content && !m.error; }).map(function (m) {
         return { role: m.role, content: m.content };
       })
     );
@@ -697,19 +714,20 @@
     var assistBody = assistNode.querySelector('.msg-body');
 
     setBusy(true);
-    setStatus('busy', 'Streaming…');
+    setStatus('busy', cfg.stream ? 'Streaming…' : 'Requesting…');
     aborter = new AbortController();
     debug({ step: 'POST chat', url: url, format: cfg.apiFormat, body: body });
 
     routeFetch(url, {
       method: 'POST',
-      headers: adapter.headers(cfg.token),
+      headers: adapter.headers(trimmedToken()),
       body: JSON.stringify(body),
       signal: aborter.signal
     }, 'POST chat').then(function (res) {
       if (!res.ok) {
         return res.text().then(function (t) {
-          throw new Error('HTTP ' + res.status + ' — ' + t.slice(0, 300));
+          debug({ step: 'HTTP ' + res.status + ' — raw response', url: url, body: t.slice(0, 2000) });
+          throw new Error(friendlyHttp(res.status) + ' — raw response in the debug inspector');
         });
       }
       var ctype = (res.headers.get('content-type') || '').toLowerCase();
@@ -749,8 +767,8 @@
     }).catch(function (err) {
       var msg;
       if (err && err.name === 'AbortError') msg = 'Stopped by user.';
-      else if (isCorsTypeError(err)) {
-        msg = 'Blocked by CORS — the API refused this browser origin. Phase 2 (Worker proxy) needed.';
+      else       if (isCorsTypeError(err)) {
+        msg = 'Blocked by CORS — the API refused this browser origin. Same-origin proxy also failed; check the API base URL.';
         el.corsBanner.classList.remove('hidden');
       } else msg = 'Error: ' + (err.message || err);
       debug({ step: 'POST chat FAILED', url: url, error: String((err && err.message) || err) });
@@ -786,6 +804,14 @@
 
     el.apiBase.addEventListener('input', function () { cfg.baseUrl = el.apiBase.value; sync(); });
     el.apiToken.addEventListener('input', function () { cfg.token = el.apiToken.value; sync(); });
+    el.apiToken.addEventListener('blur', function () {
+      var t = el.apiToken.value.trim();
+      if (t !== el.apiToken.value) { el.apiToken.value = t; cfg.token = t; sync(); }
+    });
+    el.forgetToken.addEventListener('click', function () {
+      cfg.token = ''; el.apiToken.value = ''; save();
+      toast('Token cleared from this browser', 'info');
+    });
     el.tokenPeek.addEventListener('click', function () {
       var show = el.apiToken.type === 'password';
       el.apiToken.type = show ? 'text' : 'password';
