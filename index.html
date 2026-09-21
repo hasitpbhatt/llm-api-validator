@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LLM API Validator — Chat</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          ink: '#0d1117',
+          panel: '#161b22',
+          panel2: '#1c2330',
+          line: '#30363d',
+          muted: '#8b949e',
+          primary: '#58a6ff'
+        },
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+      }
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { height: 100%; }
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  #conversation { scroll-behavior: smooth; }
+  .msg-body p { margin: 0 0 0.5rem; }
+  .msg-body p:last-child { margin-bottom: 0; }
+  .msg-body pre {
+    background: #0b0f16; border: 1px solid #30363d; border-radius: 0.5rem;
+    padding: 0.75rem; overflow-x: auto; margin: 0.5rem 0; position: relative;
+  }
+  .msg-body code.inline {
+    background: rgba(88,166,255,.12); color: #9ecfff;
+    padding: 0.1rem 0.35rem; border-radius: 0.3rem; font-size: 0.85em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .msg-body pre code { background: transparent; padding: 0; font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; }
+  .copy-btn { opacity: 0; transition: opacity .15s; }
+  .msg:hover .copy-btn { opacity: 1; }
+  .typing-dot { animation: blink 1.2s infinite; }
+  .typing-dot:nth-child(2) { animation-delay: .2s; }
+  .typing-dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }
+  textarea { field-sizing: content; }
+  #composer { max-height: 12rem; }
+  details.debug summary { cursor: pointer; }
+</style>
+</head>
+<body class="bg-ink text-slate-100 h-screen flex flex-col overflow-hidden">
+
+<!-- ══ Header ══ -->
+<header class="shrink-0 bg-panel border-b border-line px-4 py-2.5 flex items-center gap-3">
+  <button id="sidebarToggle" class="lg:hidden p-2 -ml-2 rounded hover:bg-line" aria-label="Toggle settings panel">☰</button>
+  <div class="flex items-center gap-2 min-w-0">
+    <span class="w-2.5 h-2.5 rounded-full bg-primary shrink-0" aria-hidden="true"></span>
+    <h1 class="font-semibold text-[15px] truncate">LLM API Validator</h1>
+  </div>
+  <div class="flex-1"></div>
+  <span id="statusPill" class="text-xs px-2.5 py-1 rounded-full border border-line text-muted" role="status">Not connected</span>
+  <button id="newChatBtn" class="text-xs px-3 py-1.5 rounded border border-line hover:bg-line" title="Start a new conversation">+ New chat</button>
+  <button id="exportBtn" class="text-xs px-3 py-1.5 rounded border border-line hover:bg-line" title="Download active conversation as JSON">Export</button>
+  <label class="text-xs px-3 py-1.5 rounded border border-line hover:bg-line cursor-pointer" title="Load a conversation JSON file">
+    Import<input id="importFile" type="file" accept="application/json" class="hidden" />
+  </label>
+  <button id="themeBtn" class="p-2 rounded hover:bg-line" aria-label="Toggle light/dark theme">◐</button>
+</header>
+
+<!-- ══ Body ══ -->
+<div class="flex-1 flex min-h-0 relative">
+
+  <!-- ── Sidebar / Config ── -->
+  <aside id="sidebar" class="w-[320px] shrink-0 bg-panel border-r border-line overflow-y-auto p-4 space-y-5 absolute lg:static z-20 h-full hidden lg:block">
+    <section aria-labelledby="connH">
+      <h2 id="connH" class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Connection</h2>
+      <label class="block text-xs text-muted mb-1" for="apiBase">LLM API base URL</label>
+      <input id="apiBase" type="url" inputmode="url" autocomplete="url" spellcheck="false"
+        placeholder="https://api.openai.com/v1"
+        class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 focus:outline-none focus:border-primary" />
+      <p class="text-[11px] text-muted mt-1">Base only — no trailing endpoint. e.g. <span class="mono">…/v1</span></p>
+
+      <label class="block text-xs text-muted mt-3 mb-1" for="apiToken">Bearer token</label>
+      <div class="relative">
+        <input id="apiToken" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…"
+          class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 pr-14 focus:outline-none focus:border-primary" />
+        <button id="tokenPeek" class="absolute right-1 top-1 text-[11px] px-2 py-1 rounded hover:bg-line text-muted" type="button">Show</button>
+      </div>
+      <p class="text-[11px] text-muted mt-1">Kept in this browser only (localStorage). Never sent anywhere except your API.</p>
+
+      <label class="block text-xs text-muted mt-3 mb-1" for="apiFormat">API format</label>
+      <select id="apiFormat"
+        class="w-full text-sm bg-ink border border-line rounded px-2.5 py-2 focus:outline-none focus:border-primary">
+        <option value="openai">OpenAI-compatible (default)</option>
+        <option value="anthropic">Anthropic-compatible</option>
+        <option value="custom">Custom (manual endpoints)</option>
+      </select>
+
+      <div id="customEndpoints" class="hidden mt-2 space-y-2">
+        <input id="customModelsPath" class="mono w-full text-xs bg-ink border border-line rounded px-2 py-1.5" placeholder="Models path, e.g. /models" />
+        <input id="customChatPath" class="mono w-full text-xs bg-ink border border-line rounded px-2 py-1.5" placeholder="Chat path, e.g. /chat" />
+      </div>
+
+      <button id="fetchModelsBtn" type="button"
+        class="mt-3 w-full py-2 rounded bg-primary text-ink text-sm font-semibold hover:brightness-110 disabled:opacity-50 disabled:cursor-wait">
+        Fetch models
+      </button>
+      <p id="fetchHint" class="text-[11px] text-muted mt-1.5"></p>
+    </section>
+
+    <section aria-labelledby="modelH">
+      <h2 id="modelH" class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Model</h2>
+      <label class="block text-xs text-muted mb-1" for="modelInput">Model ID <span class="opacity-70">(type manually if fetch fails)</span></label>
+      <input id="modelInput" list="modelList" spellcheck="false" autocomplete="off"
+        placeholder="e.g. gpt-4o-mini — fetch or type"
+        class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 focus:outline-none focus:border-primary" />
+      <datalist id="modelList"></datalist>
+    </section>
+
+    <section aria-labelledby="promptH">
+      <h2 id="promptH" class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">System prompt</h2>
+      <textarea id="systemPrompt" rows="3"
+        class="w-full text-sm bg-ink border border-line rounded px-2.5 py-2 focus:outline-none focus:border-primary resize-y">You are a helpful assistant.</textarea>
+    </section>
+
+    <section aria-labelledby="paramH">
+      <h2 id="paramH" class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Parameters</h2>
+      <div class="space-y-3 text-sm">
+        <div>
+          <div class="flex justify-between text-xs text-muted mb-1"><span>Temperature</span><span id="tempVal" class="mono">0.7</span></div>
+          <input id="temp" type="range" min="0" max="2" step="0.05" value="0.7" class="w-full accent-[#58a6ff]" />
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-muted mb-1"><span>Max tokens</span><span id="tokensVal" class="mono">2048</span></div>
+          <input id="maxTokens" type="range" min="1" max="128000" step="1" value="2048" class="w-full accent-[#58a6ff]" />
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-muted mb-1"><span>Top-p</span><span id="topPVal" class="mono">1.0</span></div>
+          <input id="topP" type="range" min="0" max="1" step="0.05" value="1" class="w-full accent-[#58a6ff]" />
+        </div>
+        <label class="flex items-center gap-2 text-xs text-muted cursor-pointer">
+          <input id="streamToggle" type="checkbox" checked class="accent-[#58a6ff]" /> Stream responses (SSE)
+        </label>
+      </div>
+    </section>
+
+    <details class="debug text-xs text-muted border border-line rounded p-2.5">
+      <summary class="font-medium">Last request / error inspector</summary>
+      <pre id="debugBox" class="mono mt-2 whitespace-pre-wrap break-words text-[11px] max-h-56 overflow-y-auto">No requests yet.</pre>
+    </details>
+  </aside>
+  <div id="sidebarScrim" class="hidden fixed inset-0 bg-black/50 z-10 lg:hidden"></div>
+
+  <!-- ── Chat column ── -->
+  <main class="flex-1 flex flex-col min-w-0 min-h-0">
+    <div id="corsBanner" class="hidden shrink-0 mx-4 mt-3 text-xs border border-amber-500/40 bg-amber-500/10 rounded p-3" role="alert">
+      <strong>Connection blocked by the browser (CORS).</strong>
+      The API didn't allow this origin. This is expected for most hosted APIs on Phase 1.
+      You can still type a model ID manually — if chat also fails, say the word and we'll add the Phase-2 Worker proxy.
+      <button id="corsDismiss" class="ml-2 underline">Dismiss</button>
+    </div>
+
+    <div id="conversation" class="flex-1 overflow-y-auto px-4 py-4 space-y-3" aria-live="polite"></div>
+
+    <div class="shrink-0 border-t border-line bg-panel px-4 pt-3 pb-4">
+      <div class="flex items-end gap-2">
+        <textarea id="composer" rows="1" placeholder="Message the model…  (Enter to send, Shift+Enter for newline)"
+          class="flex-1 text-sm bg-ink border border-line rounded-lg px-3 py-2.5 resize-none focus:outline-none focus:border-primary min-h-[44px]"></textarea>
+        <button id="stopBtn" type="button" class="hidden px-4 py-2.5 rounded-lg border border-red-500/60 text-red-300 text-sm hover:bg-red-500/10">Stop</button>
+        <button id="sendBtn" type="button" class="px-5 py-2.5 rounded-lg bg-primary text-ink text-sm font-semibold hover:brightness-110 disabled:opacity-50">Send</button>
+      </div>
+      <p class="text-[11px] text-muted mt-1.5">Full history is sent each turn (multi-turn). Config + chats persist in localStorage.</p>
+    </div>
+  </main>
+</div>
+
+<div id="toasts" class="fixed bottom-4 right-4 space-y-2 z-50" aria-live="assertive"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ═══════════ constants & state ═══════════ */
+  var LS_KEY = 'llm-validator/v1';
+  var GENERIC_MODELS = ['gpt-4o-mini', 'gpt-4o', 'gpt-4.1-mini'];
+
+  var state = {
+    config: {
+      baseUrl: '', token: '', apiFormat: 'openai',
+      customModelsPath: '/models', customChatPath: '/chat',
+      model: '', systemPrompt: 'You are a helpful assistant.',
+      temperature: 0.7, maxTokens: 2048, topP: 1.0, stream: true
+    },
+    conversations: [],
+    activeId: null
+  };
+  var aborter = null;
+  var isStreaming = false;
+
+  /* ═══════════ dom ═══════════ */
+  function $(id) { return document.getElementById(id); }
+  var el = {
+    sidebar: $('sidebar'), scrim: $('sidebarScrim'), sidebarToggle: $('sidebarToggle'),
+    apiBase: $('apiBase'), apiToken: $('apiToken'), tokenPeek: $('tokenPeek'),
+    apiFormat: $('apiFormat'), customEndpoints: $('customEndpoints'),
+    customModelsPath: $('customModelsPath'), customChatPath: $('customChatPath'),
+    fetchModelsBtn: $('fetchModelsBtn'), fetchHint: $('fetchHint'),
+    modelInput: $('modelInput'), modelList: $('modelList'),
+    systemPrompt: $('systemPrompt'),
+    temp: $('temp'), tempVal: $('tempVal'),
+    maxTokens: $('maxTokens'), tokensVal: $('tokensVal'),
+    topP: $('topP'), topPVal: $('topPVal'), streamToggle: $('streamToggle'),
+    statusPill: $('statusPill'), conversation: $('conversation'),
+    composer: $('composer'), sendBtn: $('sendBtn'), stopBtn: $('stopBtn'),
+    newChatBtn: $('newChatBtn'), exportBtn: $('exportBtn'), importFile: $('importFile'),
+    themeBtn: $('themeBtn'), toasts: $('toasts'),
+    corsBanner: $('corsBanner'), corsDismiss: $('corsDismiss'), debugBox: $('debugBox')
+  };
+
+  /* ═══════════ storage ═══════════ */
+  var saveTimer = null;
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* quota — ignore */ }
+    }, 150);
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      if (parsed.config) state.config = Object.assign(state.config, parsed.config);
+      if (Array.isArray(parsed.conversations)) state.conversations = parsed.conversations;
+      state.activeId = parsed.activeId || null;
+    } catch (e) { console.warn('load failed', e); }
+  }
+  function activeConv() {
+    var c = null;
+    for (var i = 0; i < state.conversations.length; i++) {
+      if (state.conversations[i].id === state.activeId) c = state.conversations[i];
+    }
+    if (!c) {
+      c = { id: 'c_' + Date.now().toString(36), title: 'New chat', messages: [], createdAt: new Date().toISOString() };
+      state.conversations.unshift(c);
+      state.activeId = c.id;
+      save();
+    }
+    return c;
+  }
+
+  /* ═══════════ helpers ═══════════ */
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+  function toast(msg, kind) {
+    var colors = { error: 'border-red-500/60', ok: 'border-green-500/60', info: 'border-line' };
+    var d = document.createElement('div');
+    d.className = 'max-w-sm text-xs bg-panel border ' + (colors[kind] || colors.info) + ' rounded-lg px-3 py-2.5 shadow-xl';
+    d.textContent = msg;
+    el.toasts.appendChild(d);
+    setTimeout(function () { d.style.opacity = '0'; d.style.transition = 'opacity .3s'; }, 3400);
+    setTimeout(function () { d.remove(); }, 3800);
+  }
+  function setStatus(mode, text) {
+    var map = {
+      idle: 'border-line text-muted',
+      busy: 'border-primary/60 text-primary',
+      ok: 'border-green-500/60 text-green-300',
+      err: 'border-red-500/60 text-red-300'
+    };
+    el.statusPill.className = 'text-xs px-2.5 py-1 rounded-full border ' + map[mode];
+    el.statusPill.textContent = text;
+  }
+  function debug(obj) {
+    try { el.debugBox.textContent = typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2); }
+    catch (e) { el.debugBox.textContent = String(obj); }
+  }
+  function normBase(u) { return String(u || '').trim().replace(/\/+$/, ''); }
+  function joinUrl(base, path) {
+    base = normBase(base);
+    if (!path) return base;
+    if (/^https?:\/\//i.test(path)) return path;
+    if (path.charAt(0) !== '/') path = '/' + path;
+    return base + path;
+  }
+  function isCorsTypeError(err) {
+    return err instanceof TypeError && /failed to fetch|networkerror|load failed/i.test(err.message || '');
+  }
+
+  /* ═══════════ adapters ═══════════ */
+  var adapters = {
+    openai: {
+      modelsPaths: function () { return ['/v1/models', '/models']; },
+      chatPath: function () { return '/v1/chat/completions'; },
+      headers: function (t) {
+        var h = { 'Content-Type': 'application/json' };
+        if (t) h.Authorization = 'Bearer ' + t;
+        return h;
+      },
+      parseModels: function (res) {
+        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id; }).filter(Boolean);
+        if (res && Array.isArray(res.models)) return res.models.map(function (m) { return m.id || m.name || m; });
+        return [];
+      },
+      requestBody: function (model, messages, cfg, stream) {
+        return { model: model, messages: messages, stream: stream,
+          temperature: cfg.temperature, max_tokens: cfg.maxTokens, top_p: cfg.topP };
+      },
+      parseNonStream: function (res) {
+        try { return res.choices[0].message.content || ''; } catch (e) { return ''; }
+      }
+    },
+    anthropic: {
+      modelsPaths: function () { return ['/v1/models', '/models']; },
+      chatPath: function () { return '/v1/messages'; },
+      headers: function (t) {
+        var h = { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' };
+        if (t) h['x-api-key'] = t;
+        return h;
+      },
+      parseModels: function (res) {
+        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id; }).filter(Boolean);
+        return [];
+      },
+      requestBody: function (model, messages, cfg, stream) {
+        var sys = '', rest = [];
+        messages.forEach(function (m) {
+          if (m.role === 'system') sys += (sys ? '\n' : '') + m.content;
+          else rest.push({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content });
+        });
+        var b = { model: model, messages: rest, stream: stream,
+          max_tokens: cfg.maxTokens, temperature: cfg.temperature, top_p: cfg.topP };
+        if (sys) b.system = sys;
+        return b;
+      },
+      parseNonStream: function (res) {
+        try {
+          return (res.content || []).map(function (b) { return b.text || ''; }).join('');
+        } catch (e) { return ''; }
+      }
+    },
+    custom: {
+      modelsPaths: function () { return [state.config.customModelsPath || '/models']; },
+      chatPath: function () { return state.config.customChatPath || '/chat'; },
+      headers: function (t) {
+        var h = { 'Content-Type': 'application/json' };
+        if (t) h.Authorization = 'Bearer ' + t;
+        return h;
+      },
+      parseModels: function (res) {
+        if (Array.isArray(res)) return res.map(function (m) { return m.id || m.name || String(m); });
+        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id || m; });
+        if (res && Array.isArray(res.models)) return res.models.map(function (m) { return m.id || m.name || String(m); });
+        return [];
+      },
+      requestBody: function (model, messages, cfg, stream) {
+        return { model: model, messages: messages, stream: stream,
+          temperature: cfg.temperature, max_tokens: cfg.maxTokens, top_p: cfg.topP };
+      },
+      parseNonStream: function (res) {
+        return res.content || res.message || res.text || res.output || JSON.stringify(res);
+      }
+    }
+  };
+
+  /* SSE parsing — buffered, handles split chunks and both vendors */
+  function createSSEParser(format) {
+    var buf = '';
+    return {
+      push: function (text) {
+        buf += text;
+        var out = '';
+        var idx;
+        while ((idx = buf.indexOf('\n\n')) !== -1) {
+          var event = buf.slice(0, idx);
+          buf = buf.slice(idx + 2);
+          var lines = event.split('\n');
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (line.indexOf('data:') !== 0) continue;
+            var data = line.slice(5).trim();
+            if (!data || data === '[DONE]') continue;
+            try {
+              var j = JSON.parse(data);
+              if (format === 'anthropic') {
+                if (j.type === 'content_block_delta' && j.delta && j.delta.text) out += j.delta.text;
+                else if (j.delta && j.delta.text) out += j.delta.text;
+              } else {
+                if (j.choices && j.choices[0]) {
+                  var c = j.choices[0];
+                  if (c.delta && typeof c.delta.content === 'string') out += c.delta.content;
+                  else if (typeof c.text === 'string') out += c.text;
+                  else if (c.message && c.message.content) out += c.message.content;
+                } else if (typeof j.content === 'string') out += j.content;
+                else if (typeof j.text === 'string') out += j.text;
+                else if (typeof j.token === 'string') out += j.token;
+              }
+            } catch (e) { /* partial JSON — wait for more */ }
+          }
+        }
+        return out;
+      },
+      flush: function () {
+        var rest = buf.trim(); buf = '';
+        if (!rest || rest === '[DONE]') return '';
+        if (rest.indexOf('data:') === 0) rest = rest.slice(5).trim();
+        try {
+          var j = JSON.parse(rest);
+          if (j.choices && j.choices[0] && j.choices[0].delta) return j.choices[0].delta.content || '';
+        } catch (e) {}
+        return '';
+      }
+    };
+  }
+
+  /* ═══════════ markdown-lite renderer ═══════════ */
+  function renderMarkdown(src) {
+    var text = String(src == null ? '' : src);
+    var blocks = [];
+    // extract fenced code blocks first
+    text = text.replace(/```(\w*)\n?([\s\S]*?)(?:```|$)/g, function (_, lang, code) {
+      blocks.push({ lang: (lang || 'plaintext').toLowerCase(), code: code.replace(/\n$/, '') });
+      return '\u0000BLOCK' + (blocks.length - 1) + '\u0000';
+    });
+    var html = esc(text);
+    html = html
+      .replace(/^### (.*)$/gm, '<strong>$1</strong>')
+      .replace(/^## (.*)$/gm, '<strong>$1</strong>')
+      .replace(/^# (.*)$/gm, '<strong>$1</strong>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+      .replace(/`([^`\n]+)`/g, '<code class="inline">$1</code>')
+      .split(/\n{2,}/).map(function (para) {
+        if (para.indexOf('\u0000BLOCK') !== -1) return para;
+        return '<p>' + para.replace(/\n/g, '<br/>') + '</p>';
+      }).join('');
+    html = html.replace(/\u0000BLOCK(\d+)\u0000/g, function (_, n) {
+      var b = blocks[Number(n)];
+      return '<pre><code class="language-' + esc(b.lang) + '">' + esc(b.code) + '</code></pre>';
+    });
+    return html || '<span class="text-muted"><span class="typing-dot">•</span> <span class="typing-dot">•</span> <span class="typing-dot">•</span></span>';
+  }
+
+  /* ═══════════ chat UI ═══════════ */
+  function bubble(role, content, opts) {
+    opts = opts || {};
+    var wrap = document.createElement('div');
+    wrap.className = 'msg flex gap-2.5 ' + (role === 'user' ? 'justify-end' : 'justify-start');
+    wrap.dataset.msgId = opts.id || '';
+    var inner;
+    if (role === 'user') {
+      inner = '<div class="max-w-[85%] bg-primary/15 border border-primary/25 rounded-xl px-3.5 py-2.5">' +
+        '<div class="msg-body text-sm whitespace-pre-wrap break-words">' + esc(content) + '</div></div>';
+    } else {
+      inner = '<div class="max-w-[85%] bg-panel border border-line rounded-xl px-3.5 py-2.5 w-fit">' +
+        '<div class="msg-body text-sm break-words">' + renderMarkdown(content) + '</div>' +
+        (opts.streaming ? '' : '<button class="copy-btn mt-1.5 text-[11px] text-muted hover:text-slate-200" data-copy>Copy</button>') +
+        '</div>';
+    }
+    wrap.innerHTML = inner;
+    return wrap;
+  }
+
+  function renderConversation() {
+    var conv = activeConv();
+    el.conversation.innerHTML = '';
+    if (!conv.messages.length) {
+      el.conversation.innerHTML =
+        '<div class="h-full flex items-center justify-center py-16 text-center">' +
+        '<div class="max-w-sm space-y-2">' +
+        '<div class="text-3xl">⌁</div>' +
+        '<p class="font-medium">Validate any OpenAI-compatible API</p>' +
+        '<p class="text-xs text-muted">1. Paste base URL + token &nbsp;→&nbsp; 2. Fetch models (or type a model ID manually) &nbsp;→&nbsp; 3. Chat. Streaming, params, and history included.</p>' +
+        '</div></div>';
+      return;
+    }
+    conv.messages.forEach(function (m) {
+      el.conversation.appendChild(bubble(m.role, m.content, { id: m.id }));
+    });
+    highlightNewCode();
+    el.conversation.scrollTop = el.conversation.scrollHeight;
+  }
+
+  function highlightNewCode() {
+    el.conversation.querySelectorAll('pre code:not([data-hl])').forEach(function (code) {
+      try {
+        if (window.hljs) {
+          if (hljs.getLanguage(code.className.replace('language-', ''))) hljs.highlightElement(code);
+          else hljs.highlightElement(code);
+        }
+        code.setAttribute('data-hl', '1');
+      } catch (e) { /* ignore */ }
+    });
+  }
+
+  el.conversation.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+    var body = btn.closest('.msg').querySelector('.msg-body');
+    var text = body ? body.innerText : '';
+    navigator.clipboard.writeText(text).then(
+      function () { toast('Copied to clipboard', 'ok'); },
+      function () { toast('Copy failed', 'error'); });
+  });
+
+  /* ═══════════ fetch models ═══════════ */
+  function setFetching(on) {
+    el.fetchModelsBtn.disabled = on;
+    el.fetchModelsBtn.textContent = on ? 'Fetching…' : 'Fetch models';
+  }
+
+  function fetchModels() {
+    var cfg = state.config;
+    var base = normBase(cfg.baseUrl);
+    if (!base) { toast('Enter an API base URL first', 'error'); el.apiBase.focus(); return; }
+    var adapter = adapters[cfg.apiFormat] || adapters.openai;
+    var paths = adapter.modelsPaths();
+
+    setFetching(true);
+    setStatus('busy', 'Fetching models…');
+    el.fetchHint.textContent = '';
+    el.corsBanner.classList.add('hidden');
+
+    var attempt = function (i) {
+      if (i >= paths.length) {
+        setFetching(false);
+        setStatus('err', 'Fetch failed');
+        el.fetchHint.textContent = 'Tried: ' + paths.map(function (p) { return joinUrl(base, p); }).join(' , ');
+        toast('Could not fetch models — you can still type a model ID manually', 'error');
+        return;
+      }
+      var url = joinUrl(base, paths[i]);
+      debug({ step: 'GET models', url: url, format: cfg.apiFormat });
+      fetch(url, { method: 'GET', headers: adapter.headers(cfg.token) })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+          return res.json();
+        })
+        .then(function (data) {
+          var models = adapter.parseModels(data);
+          if (!models.length) throw new Error('No models in response — check inspector for shape');
+          populateModels(models);
+          setFetching(false);
+          setStatus('ok', 'Connected · ' + models.length + ' models');
+          el.fetchHint.textContent = models.length + ' models loaded from ' + url;
+          toast(models.length + ' models loaded', 'ok');
+          if (!cfg.model || models.indexOf(cfg.model) === -1) {
+            cfg.model = models[0]; el.modelInput.value = models[0]; save();
+          }
+        })
+        .catch(function (err) {
+          debug({ step: 'GET models FAILED', url: url, error: String(err && err.message || err) });
+          if (isCorsTypeError(err)) {
+            setFetching(false);
+            setStatus('err', 'Blocked by CORS');
+            el.corsBanner.classList.remove('hidden');
+            el.fetchHint.textContent = 'Browser blocked the request (CORS). Type a model ID manually to still try chat.';
+            toast('CORS blocked — manual model entry still works', 'error');
+            return;
+          }
+          if (i + 1 < paths.length) { attempt(i + 1); return; }
+          setFetching(false);
+          setStatus('err', 'Fetch failed');
+          el.fetchHint.textContent = String(err.message || err);
+          toast('Fetch failed: ' + (err.message || err), 'error');
+        });
+    };
+    attempt(0);
+  }
+
+  function populateModels(models) {
+    el.modelList.innerHTML = models.map(function (m) {
+      return '<option value="' + esc(m) + '">';
+    }).join('');
+  }
+
+  /* ═══════════ send chat ═══════════ */
+  function setBusy(on) {
+    isStreaming = on;
+    el.sendBtn.disabled = on;
+    el.sendBtn.textContent = on ? 'Sending…' : 'Send';
+    el.stopBtn.classList.toggle('hidden', !on);
+  }
+
+  function sendMessage() {
+    var text = el.composer.value.trim();
+    if (!text || isStreaming) return;
+    var cfg = state.config;
+    var base = normBase(cfg.baseUrl);
+    if (!base) { toast('Enter an API base URL first', 'error'); el.apiBase.focus(); return; }
+    if (!cfg.model) { toast('Enter a model ID (fetch or type manually)', 'error'); el.modelInput.focus(); return; }
+
+    var conv = activeConv();
+    var userMsg = { id: 'm_' + Date.now().toString(36), role: 'user', content: text, ts: new Date().toISOString() };
+    conv.messages.push(userMsg);
+    if (conv.messages.length === 1) conv.title = text.slice(0, 48);
+    save();
+
+    el.composer.value = '';
+    autoGrow();
+    renderConversation();
+
+    var adapter = adapters[cfg.apiFormat] || adapters.openai;
+    var url = joinUrl(base, adapter.chatPath());
+    var history = [{ role: 'system', content: cfg.systemPrompt }].concat(
+      conv.messages.filter(function (m) { return m.content; }).map(function (m) {
+        return { role: m.role, content: m.content };
+      })
+    );
+    var body = adapter.requestBody(cfg.model, history, cfg, cfg.stream);
+
+    var assistId = 'm_' + (Date.now() + 1).toString(36);
+    var assistNode = bubble('assistant', '', { id: assistId, streaming: true });
+    el.conversation.appendChild(assistNode);
+    el.conversation.scrollTop = el.conversation.scrollHeight;
+    var assistBody = assistNode.querySelector('.msg-body');
+
+    setBusy(true);
+    setStatus('busy', 'Streaming…');
+    aborter = new AbortController();
+    debug({ step: 'POST chat', url: url, format: cfg.apiFormat, body: body });
+
+    fetch(url, {
+      method: 'POST',
+      headers: adapter.headers(cfg.token),
+      body: JSON.stringify(body),
+      signal: aborter.signal
+    }).then(function (res) {
+      if (!res.ok) {
+        return res.text().then(function (t) {
+          throw new Error('HTTP ' + res.status + ' — ' + t.slice(0, 300));
+        });
+      }
+      var ctype = (res.headers.get('content-type') || '').toLowerCase();
+      if (!cfg.stream || !res.body || ctype.indexOf('text/event-stream') === -1) {
+        var isJson = ctype.indexOf('json') !== -1;
+        return (isJson ? res.json() : res.text()).then(function (data) {
+          var content = (typeof data === 'string') ? data : adapter.parseNonStream(data);
+          assistBody.innerHTML = renderMarkdown(content);
+          highlightNewCode();
+          finishAssistant(conv, assistId, assistNode, content || '(empty response)');
+        });
+      }
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var parser = createSSEParser(cfg.apiFormat);
+      var full = '';
+      var pump = function () {
+        return reader.read().then(function (r) {
+          if (r.done) {
+            full += parser.flush();
+            assistBody.innerHTML = renderMarkdown(full);
+            highlightNewCode();
+            finishAssistant(conv, assistId, assistNode, full || '(empty response)');
+            return;
+          }
+          var delta = parser.push(decoder.decode(r.value, { stream: true }));
+          if (delta) {
+            full += delta;
+            assistBody.innerHTML = renderMarkdown(full);
+            highlightNewCode();
+            el.conversation.scrollTop = el.conversation.scrollHeight;
+          }
+          return pump();
+        });
+      };
+      return pump();
+    }).catch(function (err) {
+      var msg;
+      if (err && err.name === 'AbortError') msg = 'Stopped by user.';
+      else if (isCorsTypeError(err)) {
+        msg = 'Blocked by CORS — the API refused this browser origin. Phase 2 (Worker proxy) needed.';
+        el.corsBanner.classList.remove('hidden');
+      } else msg = 'Error: ' + (err.message || err);
+      debug({ step: 'POST chat FAILED', url: url, error: String((err && err.message) || err) });
+      assistBody.innerHTML = renderMarkdown(msg);
+      finishAssistant(conv, assistId, assistNode, msg, true);
+      setStatus('err', 'Request failed');
+      toast(msg.slice(0, 120), 'error');
+    });
+  }
+
+  function finishAssistant(conv, id, node, content, isError) {
+    conv.messages.push({ id: id, role: 'assistant', content: content, ts: new Date().toISOString(), error: !!isError });
+    save();
+    setBusy(false);
+    if (!isError) setStatus('ok', 'Connected · ' + state.config.model);
+    // replace streaming node with final node (adds Copy button)
+    var final = bubble('assistant', content, { id: id });
+    node.replaceWith(final);
+    highlightNewCode();
+    el.conversation.scrollTop = el.conversation.scrollHeight;
+  }
+
+  /* ═══════════ composer ═══════════ */
+  function autoGrow() {
+    el.composer.style.height = 'auto';
+    el.composer.style.height = Math.min(el.composer.scrollHeight, 192) + 'px';
+  }
+
+  /* ═══════════ wiring ═══════════ */
+  function bindConfig() {
+    var cfg = state.config;
+    var sync = function () { save(); };
+
+    el.apiBase.addEventListener('input', function () { cfg.baseUrl = el.apiBase.value; sync(); });
+    el.apiToken.addEventListener('input', function () { cfg.token = el.apiToken.value; sync(); });
+    el.tokenPeek.addEventListener('click', function () {
+      var show = el.apiToken.type === 'password';
+      el.apiToken.type = show ? 'text' : 'password';
+      el.tokenPeek.textContent = show ? 'Hide' : 'Show';
+    });
+    el.apiFormat.addEventListener('change', function () {
+      cfg.apiFormat = el.apiFormat.value;
+      el.customEndpoints.classList.toggle('hidden', cfg.apiFormat !== 'custom');
+      sync();
+    });
+    el.customModelsPath.addEventListener('input', function () { cfg.customModelsPath = el.customModelsPath.value; sync(); });
+    el.customChatPath.addEventListener('input', function () { cfg.customChatPath = el.customChatPath.value; sync(); });
+    el.modelInput.addEventListener('input', function () { cfg.model = el.modelInput.value.trim(); sync(); });
+    el.systemPrompt.addEventListener('input', function () { cfg.systemPrompt = el.systemPrompt.value; sync(); });
+
+    el.temp.addEventListener('input', function () {
+      cfg.temperature = parseFloat(el.temp.value); el.tempVal.textContent = cfg.temperature.toFixed(2); sync();
+    });
+    el.maxTokens.addEventListener('input', function () {
+      cfg.maxTokens = parseInt(el.maxTokens.value, 10); el.tokensVal.textContent = String(cfg.maxTokens); sync();
+    });
+    el.topP.addEventListener('input', function () {
+      cfg.topP = parseFloat(el.topP.value); el.topPVal.textContent = cfg.topP.toFixed(2); sync();
+    });
+    el.streamToggle.addEventListener('change', function () { cfg.stream = el.streamToggle.checked; sync(); });
+
+    el.fetchModelsBtn.addEventListener('click', fetchModels);
+    el.sendBtn.addEventListener('click', sendMessage);
+    el.stopBtn.addEventListener('click', function () { if (aborter) aborter.abort(); });
+    el.composer.addEventListener('input', autoGrow);
+    el.composer.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendMessage(); }
+    });
+
+    el.newChatBtn.addEventListener('click', function () {
+      var c = { id: 'c_' + Date.now().toString(36), title: 'New chat', messages: [], createdAt: new Date().toISOString() };
+      state.conversations.unshift(c);
+      state.activeId = c.id;
+      save(); renderConversation();
+      toast('New chat started', 'info');
+    });
+    el.exportBtn.addEventListener('click', function () {
+      var conv = activeConv();
+      var blob = new Blob([JSON.stringify(conv, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'chat-' + conv.id + '.json';
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    });
+    el.importFile.addEventListener('change', function () {
+      var f = el.importFile.files[0];
+      if (!f) return;
+      var r = new FileReader();
+      r.onload = function () {
+        try {
+          var conv = JSON.parse(r.result);
+          if (!conv.messages) throw new Error('bad file');
+          conv.id = 'c_' + Date.now().toString(36);
+          state.conversations.unshift(conv);
+          state.activeId = conv.id;
+          save(); renderConversation();
+          toast('Conversation imported', 'ok');
+        } catch (e) { toast('Import failed: invalid JSON', 'error'); }
+      };
+      r.readAsText(f);
+      el.importFile.value = '';
+    });
+
+    el.corsDismiss.addEventListener('click', function () { el.corsBanner.classList.add('hidden'); });
+    el.themeBtn.addEventListener('click', function () {
+      document.documentElement.classList.toggle('dark');
+    });
+    el.sidebarToggle.addEventListener('click', function () {
+      el.sidebar.classList.toggle('hidden');
+      el.scrim.classList.toggle('hidden');
+    });
+    el.scrim.addEventListener('click', function () {
+      el.sidebar.classList.add('hidden');
+      el.scrim.classList.add('hidden');
+    });
+  }
+
+  function paintConfig() {
+    var cfg = state.config;
+    el.apiBase.value = cfg.baseUrl || '';
+    el.apiToken.value = cfg.token || '';
+    el.apiFormat.value = cfg.apiFormat || 'openai';
+    el.customEndpoints.classList.toggle('hidden', el.apiFormat.value !== 'custom');
+    el.customModelsPath.value = cfg.customModelsPath || '/models';
+    el.customChatPath.value = cfg.customChatPath || '/chat';
+    el.modelInput.value = cfg.model || '';
+    el.systemPrompt.value = cfg.systemPrompt || '';
+    el.temp.value = cfg.temperature;
+    el.tempVal.textContent = Number(cfg.temperature).toFixed(2);
+    el.maxTokens.value = cfg.maxTokens;
+    el.tokensVal.textContent = String(cfg.maxTokens);
+    el.topP.value = cfg.topP;
+    el.topPVal.textContent = Number(cfg.topP).toFixed(2);
+    el.streamToggle.checked = cfg.stream !== false;
+    if (cfg.model) {
+      el.modelList.innerHTML = '<option value="' + esc(cfg.model) + '">';
+    } else {
+      el.modelList.innerHTML = GENERIC_MODELS.map(function (m) {
+        return '<option value="' + m + '">';
+      }).join('');
+    }
+  }
+
+  /* ═══════════ init ═══════════ */
+  load();
+  activeConv();
+  bindConfig();
+  paintConfig();
+  renderConversation();
+  autoGrow();
+  setStatus('idle', state.config.baseUrl ? 'Configured — fetch models' : 'Not connected');
+})();
+</script>
+</body>
+</html>
