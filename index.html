@@ -135,10 +135,17 @@
     <section aria-labelledby="modelH">
       <h2 id="modelH" class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Model</h2>
       <label class="block text-xs text-muted mb-1" for="modelInput">Model ID <span class="opacity-70">(type manually if fetch fails)</span></label>
-      <input id="modelInput" list="modelList" spellcheck="false" autocomplete="off"
-        placeholder="e.g. gpt-4o-mini — fetch or type"
-        class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 focus:outline-none focus:border-primary" />
-      <datalist id="modelList"></datalist>
+      <div id="modelCombo" class="relative">
+        <input id="modelInput" spellcheck="false" autocomplete="off" role="combobox"
+          aria-expanded="false" aria-controls="modelDropdown" aria-autocomplete="list"
+          placeholder="e.g. gpt-4o-mini — fetch or type"
+          class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 pr-8 focus:outline-none focus:border-primary" />
+        <button id="modelToggle" type="button" tabindex="-1" aria-hidden="true"
+          class="absolute right-1 top-1/2 -translate-y-1/2 px-1.5 py-1 text-xs text-muted hover:text-slate-200 rounded hover:bg-line">▾</button>
+        <div id="modelDropdown" class="hidden absolute z-30 left-0 right-0 max-h-60 overflow-y-auto bg-panel border border-line rounded-lg shadow-xl py-1"
+          role="listbox" aria-label="Available models"></div>
+      </div>
+      <p id="modelCount" class="text-[11px] text-muted mt-1"></p>
     </section>
 
     <section aria-labelledby="promptH">
@@ -231,7 +238,8 @@
     customModelsPath: $('customModelsPath'), customChatPath: $('customChatPath'),
     fetchModelsBtn: $('fetchModelsBtn'), fetchHint: $('fetchHint'),
     proxyMode: $('proxyMode'), proxyUrl: $('proxyUrl'),
-    modelInput: $('modelInput'), modelList: $('modelList'),
+    modelInput: $('modelInput'), modelCombo: $('modelCombo'), modelToggle: $('modelToggle'),
+    modelDropdown: $('modelDropdown'), modelCount: $('modelCount'),
     systemPrompt: $('systemPrompt'),
     temp: $('temp'), tempVal: $('tempVal'),
     maxTokens: $('maxTokens'), tokensVal: $('tokensVal'),
@@ -666,10 +674,79 @@
     attempt(0);
   }
 
+  /* ═══════════ model combobox ═══════════ */
+  var allModels = [];
+  var modelMatches = [];
+  var modelActive = -1;
+
   function populateModels(models) {
-    el.modelList.innerHTML = models.map(function (m) {
-      return '<option value="' + esc(m) + '">';
+    allModels = models;
+    el.modelCount.textContent = models.length + ' models — click the field to browse, type to filter';
+    if (!el.modelDropdown.classList.contains('hidden')) renderModelOptions();
+  }
+
+  function renderModelOptions() {
+    var q = el.modelInput.value.trim().toLowerCase();
+    modelMatches = q ? allModels.filter(function (m) { return String(m).toLowerCase().indexOf(q) !== -1; }) : allModels.slice();
+    if (modelActive >= modelMatches.length) modelActive = -1;
+    if (!modelMatches.length) {
+      el.modelDropdown.innerHTML = '<div class="px-2.5 py-1.5 text-xs text-muted">' +
+        (allModels.length ? 'No model matches the typed text — pressing Enter uses it as-is' : 'No models loaded — fetch models or type an ID') +
+        '</div>';
+      el.modelInput.removeAttribute('aria-activedescendant');
+      return;
+    }
+    el.modelDropdown.innerHTML = modelMatches.map(function (m, i) {
+      return '<div role="option" id="modelOpt' + i + '" data-model="' + esc(m) + '" aria-selected="' + (i === modelActive) + '" ' +
+        'class="mono text-sm px-2.5 py-1.5 mx-1 rounded cursor-pointer truncate ' + (i === modelActive ? 'bg-line' : 'hover:bg-line') + '">' +
+        esc(m) + '</div>';
     }).join('');
+    if (modelActive >= 0) el.modelInput.setAttribute('aria-activedescendant', 'modelOpt' + modelActive);
+    else el.modelInput.removeAttribute('aria-activedescendant');
+  }
+
+  function positionModelDropdown() {
+    var r = el.modelInput.getBoundingClientRect();
+    var spaceBelow = window.innerHeight - r.bottom;
+    var dropUp = spaceBelow < 250 && r.top > spaceBelow;
+    el.modelDropdown.style.top = dropUp ? 'auto' : 'calc(100% + 4px)';
+    el.modelDropdown.style.bottom = dropUp ? 'calc(100% + 4px)' : 'auto';
+    el.modelDropdown.style.maxHeight = Math.max(120, Math.min(240, (dropUp ? r.top : spaceBelow) - 12)) + 'px';
+  }
+
+  function openModelDropdown() {
+    el.modelDropdown.classList.remove('hidden');
+    el.modelInput.setAttribute('aria-expanded', 'true');
+    positionModelDropdown();
+    renderModelOptions();
+  }
+  function closeModelDropdown() {
+    el.modelDropdown.classList.add('hidden');
+    el.modelInput.setAttribute('aria-expanded', 'false');
+    el.modelInput.removeAttribute('aria-activedescendant');
+    modelActive = -1;
+  }
+  function isModelDropdownOpen() { return !el.modelDropdown.classList.contains('hidden'); }
+
+  function setModelActive(i) {
+    modelActive = Math.max(-1, Math.min(i, modelMatches.length - 1));
+    renderModelOptions();
+    var node = modelActive >= 0 && el.modelDropdown.querySelector('#modelOpt' + modelActive);
+    if (node) node.scrollIntoView({ block: 'nearest' });
+  }
+
+  function selectModel(m) {
+    var cfg = state.config;
+    el.modelInput.value = m;
+    cfg.model = m;
+    save();
+    closeModelDropdown();
+    el.modelInput.focus();
+  }
+
+  function populateModelsFromGeneric() {
+    allModels = GENERIC_MODELS.slice();
+    el.modelCount.textContent = 'No models fetched — type an ID or click Fetch models';
   }
 
   /* ═══════════ send chat ═══════════ */
@@ -826,7 +903,41 @@
     el.customChatPath.addEventListener('input', function () { cfg.customChatPath = el.customChatPath.value; sync(); });
     el.proxyMode.addEventListener('change', function () { cfg.proxyMode = el.proxyMode.value; sync(); });
     el.proxyUrl.addEventListener('input', function () { cfg.proxyUrl = el.proxyUrl.value.trim(); sync(); });
-    el.modelInput.addEventListener('input', function () { cfg.model = el.modelInput.value.trim(); sync(); });
+    el.modelInput.addEventListener('input', function () { cfg.model = el.modelInput.value.trim(); sync(); if (isModelDropdownOpen()) renderModelOptions(); });
+    el.modelInput.addEventListener('focus', openModelDropdown);
+    el.modelInput.addEventListener('click', openModelDropdown);
+    el.modelInput.addEventListener('blur', closeModelDropdown);
+    el.modelInput.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!isModelDropdownOpen()) openModelDropdown();
+        else setModelActive(modelActive + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (isModelDropdownOpen()) setModelActive(modelActive - 1);
+      } else if (e.key === 'Enter') {
+        if (isModelDropdownOpen() && modelActive >= 0) { e.preventDefault(); selectModel(modelMatches[modelActive]); }
+        else closeModelDropdown();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        closeModelDropdown();
+        el.modelInput.blur();
+      }
+    });
+    el.modelToggle.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    el.modelToggle.addEventListener('click', function () {
+      if (isModelDropdownOpen()) { closeModelDropdown(); el.modelInput.focus(); }
+      else { el.modelInput.focus(); openModelDropdown(); }
+    });
+    el.modelDropdown.addEventListener('mousedown', function (e) {
+      var opt = e.target.closest('[data-model]');
+      if (!opt) return;
+      e.preventDefault();
+      selectModel(opt.dataset.model);
+    });
+    document.addEventListener('mousedown', function (e) {
+      if (isModelDropdownOpen() && !el.modelCombo.contains(e.target)) closeModelDropdown();
+    });
     el.systemPrompt.addEventListener('input', function () { cfg.systemPrompt = el.systemPrompt.value; sync(); });
 
     el.temp.addEventListener('input', function () {
@@ -916,12 +1027,10 @@
     el.topP.value = cfg.topP;
     el.topPVal.textContent = Number(cfg.topP).toFixed(2);
     el.streamToggle.checked = cfg.stream !== false;
+    populateModelsFromGeneric();
     if (cfg.model) {
-      el.modelList.innerHTML = '<option value="' + esc(cfg.model) + '">';
-    } else {
-      el.modelList.innerHTML = GENERIC_MODELS.map(function (m) {
-        return '<option value="' + m + '">';
-      }).join('');
+      allModels = [cfg.model].concat(allModels.filter(function (m) { return m !== cfg.model; }));
+      el.modelCount.textContent = 'Current model: ' + cfg.model + ' — Fetch models for the full list';
     }
   }
 
