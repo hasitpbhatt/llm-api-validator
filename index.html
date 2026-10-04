@@ -379,7 +379,8 @@
     c = Number(c);
     if (!isFinite(c) || c < 0) return null;
     if (c === 0) return '$0';
-    return c < 0.01 ? '$' + c.toFixed(4) : '$' + c.toFixed(2);
+    return c < 0.01 ? '$' + c.toFixed(5) : '$' + c.toFixed(2);
+  }
   var lastRoute = 'direct'; // 'direct' | 'proxy' — set by routeFetch, read for status text
   function proxiedUrl(proxyBase, apiBase, fullUrl) {
     var base = normBase(apiBase);
