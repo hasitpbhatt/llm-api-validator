@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LLM API Validator — Chat</title>
-<!-- Google AdSense (publisher: ca-pub-7046934020222763 — freellm.hasit.in) -->
+<title>LLM API Validator ? Chat</title>
+<!-- Google AdSense (publisher: ca-pub-7046934020222763 ? freellm.hasit.in) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7046934020222763" crossorigin="anonymous"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -59,9 +59,9 @@
 </head>
 <body class="bg-ink text-slate-100 h-screen flex flex-col overflow-hidden">
 
-<!-- ══ Header ══ -->
+<!-- ?? Header ?? -->
 <header class="shrink-0 bg-panel border-b border-line px-4 py-2.5 flex items-center gap-3">
-  <button id="sidebarToggle" class="lg:hidden p-2 -ml-2 rounded hover:bg-line" aria-label="Toggle settings panel">☰</button>
+  <button id="sidebarToggle" class="lg:hidden p-2 -ml-2 rounded hover:bg-line" aria-label="Toggle settings panel">?</button>
   <div class="flex items-center gap-2 min-w-0">
     <span class="w-2.5 h-2.5 rounded-full bg-primary shrink-0" aria-hidden="true"></span>
     <h1 class="font-semibold text-[15px] truncate">LLM API Validator</h1>
@@ -73,13 +73,13 @@
   <label class="text-xs px-3 py-1.5 rounded border border-line hover:bg-line cursor-pointer" title="Load a conversation JSON file">
     Import<input id="importFile" type="file" accept="application/json" class="hidden" />
   </label>
-  <button id="themeBtn" class="p-2 rounded hover:bg-line" aria-label="Toggle light/dark theme">◐</button>
+  <button id="themeBtn" class="p-2 rounded hover:bg-line" aria-label="Toggle light/dark theme">?</button>
 </header>
 
-<!-- ══ Body ══ -->
+<!-- ?? Body ?? -->
 <div class="flex-1 flex min-h-0 relative">
 
-  <!-- ── Sidebar / Config ── -->
+  <!-- ?? Sidebar / Config ?? -->
   <aside id="sidebar" class="w-[320px] shrink-0 bg-panel border-r border-line overflow-y-auto p-4 space-y-5 absolute lg:static z-20 h-full hidden lg:block">
     <section aria-labelledby="connH">
       <h2 id="connH" class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Connection</h2>
@@ -87,15 +87,15 @@
       <input id="apiBase" type="url" inputmode="url" autocomplete="url" spellcheck="false"
         placeholder="https://api.openai.com/v1"
         class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 focus:outline-none focus:border-primary" />
-      <p class="text-[11px] text-muted mt-1">Base only — no trailing endpoint. e.g. <span class="mono">…/v1</span></p>
+      <p class="text-[11px] text-muted mt-1">Base only ? no trailing endpoint. e.g. <span class="mono">?/v1</span></p>
 
       <label class="block text-xs text-muted mt-3 mb-1" for="apiToken">Bearer token</label>
       <div class="relative">
-        <input id="apiToken" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…"
+        <input id="apiToken" type="password" autocomplete="off" spellcheck="false" placeholder="sk-?"
           class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 pr-14 focus:outline-none focus:border-primary" />
         <button id="tokenPeek" class="absolute right-1 top-1 text-[11px] px-2 py-1 rounded hover:bg-line text-muted" type="button">Show</button>
       </div>
-      <p class="text-[11px] text-muted mt-1">Stored only in this browser (localStorage). Sent straight to your API — in proxy mode your own proxy forwards it per request and never stores it.
+      <p class="text-[11px] text-muted mt-1">Stored only in this browser (localStorage). Sent straight to your API ? in proxy mode your own proxy forwards it per request and never stores it.
         <button id="forgetToken" type="button" class="underline hover:text-primary">Forget token</button></p>
 
       <label class="block text-xs text-muted mt-3 mb-1" for="apiFormat">API format</label>
@@ -118,12 +118,12 @@
       <p id="fetchHint" class="text-[11px] text-muted mt-1.5"></p>
 
       <details class="mt-3 text-xs border border-line rounded p-2.5">
-        <summary class="cursor-pointer font-medium text-muted">Proxy · same-origin (only if CORS blocks)</summary>
+        <summary class="cursor-pointer font-medium text-muted">Proxy ? same-origin (only if CORS blocks)</summary>
         <label class="block text-xs text-muted mt-2 mb-1" for="proxyMode">Proxy mode</label>
         <select id="proxyMode"
           class="w-full text-xs bg-ink border border-line rounded px-2 py-1.5 focus:outline-none focus:border-primary">
-          <option value="auto">Auto — direct first, proxy on CORS block</option>
-          <option value="direct">Direct only — never use proxy</option>
+          <option value="auto">Auto ? direct first, proxy on CORS block</option>
+          <option value="direct">Direct only ? never use proxy</option>
           <option value="proxy">Always use proxy</option>
         </select>
         <label class="block text-xs text-muted mt-2 mb-1" for="proxyUrl">Proxy base override (optional)</label>
@@ -140,10 +140,10 @@
       <div id="modelCombo" class="relative">
         <input id="modelInput" spellcheck="false" autocomplete="off" role="combobox"
           aria-expanded="false" aria-controls="modelDropdown" aria-autocomplete="list"
-          placeholder="e.g. gpt-4o-mini — fetch or type"
+          placeholder="e.g. gpt-4o-mini ? fetch or type"
           class="mono w-full text-sm bg-ink border border-line rounded px-2.5 py-2 pr-8 focus:outline-none focus:border-primary" />
         <button id="modelToggle" type="button" tabindex="-1" aria-hidden="true"
-          class="absolute right-1 top-1/2 -translate-y-1/2 px-1.5 py-1 text-xs text-muted hover:text-slate-200 rounded hover:bg-line">▾</button>
+          class="absolute right-1 top-1/2 -translate-y-1/2 px-1.5 py-1 text-xs text-muted hover:text-slate-200 rounded hover:bg-line">?</button>
         <div id="modelDropdown" class="hidden absolute z-30 left-0 right-0 max-h-60 overflow-y-auto bg-panel border border-line rounded-lg shadow-xl py-1"
           role="listbox" aria-label="Available models"></div>
       </div>
@@ -184,11 +184,11 @@
   </aside>
   <div id="sidebarScrim" class="hidden fixed inset-0 bg-black/50 z-10 lg:hidden"></div>
 
-  <!-- ── Chat column ── -->
+  <!-- ?? Chat column ?? -->
   <main class="flex-1 flex flex-col min-w-0 min-h-0">
     <div id="corsBanner" class="hidden shrink-0 mx-4 mt-3 text-xs border border-amber-500/40 bg-amber-500/10 rounded p-3" role="alert">
       <strong>Connection blocked by the browser (CORS).</strong>
-      The API didn't allow this origin. You can still type a model ID manually — chat auto-retries
+      The API didn't allow this origin. You can still type a model ID manually ? chat auto-retries
       through the same-origin proxy (<span class="mono">/api</span>).
       <button id="corsDismiss" class="ml-2 underline">Dismiss</button>
     </div>
@@ -197,7 +197,7 @@
 
     <div class="shrink-0 border-t border-line bg-panel px-4 pt-3 pb-4">
       <div class="flex items-end gap-2">
-        <textarea id="composer" rows="1" placeholder="Message the model…  (Enter to send, Shift+Enter for newline)"
+        <textarea id="composer" rows="1" placeholder="Message the model?  (Enter to send, Shift+Enter for newline)"
           class="flex-1 text-sm bg-ink border border-line rounded-lg px-3 py-2.5 resize-none focus:outline-none focus:border-primary min-h-[44px]"></textarea>
         <button id="stopBtn" type="button" class="hidden px-4 py-2.5 rounded-lg border border-red-500/60 text-red-300 text-sm hover:bg-red-500/10">Stop</button>
         <button id="sendBtn" type="button" class="px-5 py-2.5 rounded-lg bg-primary text-ink text-sm font-semibold hover:brightness-110 disabled:opacity-50">Send</button>
@@ -213,7 +213,7 @@
 (function () {
   'use strict';
 
-  /* ═══════════ constants & state ═══════════ */
+  /* ??????????? constants & state ??????????? */
   var LS_KEY = 'llm-validator/v1';
   /* Cost fallback: USD per 1M tokens. Providers that return no cost are priced here.
      ponytail: static table only; swap for a live pricing feed when 1 more vendor needs support. */
@@ -253,7 +253,7 @@
   var aborter = null;
   var isStreaming = false;
 
-  /* ═══════════ dom ═══════════ */
+  /* ??????????? dom ??????????? */
   function $(id) { return document.getElementById(id); }
   var el = {
     sidebar: $('sidebar'), scrim: $('sidebarScrim'), sidebarToggle: $('sidebarToggle'),
@@ -275,12 +275,12 @@
     corsBanner: $('corsBanner'), corsDismiss: $('corsDismiss'), debugBox: $('debugBox')
   };
 
-  /* ═══════════ storage ═══════════ */
+  /* ??????????? storage ??????????? */
   var saveTimer = null;
   function save() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(function () {
-      try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* quota — ignore */ }
+      try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* quota ? ignore */ }
     }, 150);
   }
   function load() {
@@ -307,7 +307,7 @@
     return c;
   }
 
-  /* ═══════════ helpers ═══════════ */
+  /* ??????????? helpers ??????????? */
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -344,7 +344,7 @@
     if (!path) return base;
     if (/^https?:\/\//i.test(path)) return path;
     if (path.charAt(0) !== '/') path = '/' + path;
-    // base "…/v1" + path "/v1/chat/completions" must not become "…/v1/v1/…"
+    // base "?/v1" + path "/v1/chat/completions" must not become "?/v1/v1/?"
     if (/\/v\d+$/.test(base) && /^\/v\d+(\/|$)/.test(path)) path = path.replace(/^\/v\d+/, '') || '/';
     return base + path;
   }
@@ -352,15 +352,15 @@
     return err instanceof TypeError && /failed to fetch|networkerror|load failed/i.test(err.message || '');
   }
   var HTTP_HELP = {
-    400: 'Bad request (400) — check the model ID and request shape',
-    401: 'Token rejected (401) — re-paste the key; make sure it belongs to this provider and base URL',
-    403: 'Access denied (403) — the key may not be allowed for this model or endpoint',
-    404: 'Endpoint not found (404) — check the base URL and model ID',
-    408: 'The API timed out (408) — try again',
-    429: 'Rate limited (429) — wait a moment or check your quota',
-    500: 'Provider server error (500) — retry shortly; the problem is on their side',
-    502: 'Bad gateway (502) — retry; the provider or proxy hiccuped',
-    503: 'Service unavailable (503) — provider is overloaded; retry shortly'
+    400: 'Bad request (400) ? check the model ID and request shape',
+    401: 'Token rejected (401) ? re-paste the key; make sure it belongs to this provider and base URL',
+    403: 'Access denied (403) ? the key may not be allowed for this model or endpoint',
+    404: 'Endpoint not found (404) ? check the base URL and model ID',
+    408: 'The API timed out (408) ? try again',
+    429: 'Rate limited (429) ? wait a moment or check your quota',
+    500: 'Provider server error (500) ? retry shortly; the problem is on their side',
+    502: 'Bad gateway (502) ? retry; the provider or proxy hiccuped',
+    503: 'Service unavailable (503) ? provider is overloaded; retry shortly'
   };
   function friendlyHttp(status) {
     return HTTP_HELP[status] || ('HTTP ' + status);
@@ -381,7 +381,7 @@
     if (c === 0) return '$0';
     return c < 0.01 ? '$' + c.toFixed(5) : '$' + c.toFixed(2);
   }
-  var lastRoute = 'direct'; // 'direct' | 'proxy' — set by routeFetch, read for status text
+  var lastRoute = 'direct'; // 'direct' | 'proxy' ? set by routeFetch, read for status text
   function proxiedUrl(proxyBase, apiBase, fullUrl) {
     var base = normBase(apiBase);
     var path = fullUrl.slice(base.length) || '/';
@@ -424,14 +424,14 @@
     // auto: direct first, same-origin proxy only when the browser blocks
     return attemptDirect().catch(function (err) {
       if (isCorsTypeError(err)) {
-        toast('Direct request blocked (CORS) — retrying via same-origin proxy…', 'info');
+        toast('Direct request blocked (CORS) ? retrying via same-origin proxy?', 'info');
         return attemptProxy('cors-fallback');
       }
       throw err;
     });
   }
 
-  /* ═══════════ adapters ═══════════ */
+  /* ??????????? adapters ??????????? */
   var adapters = {
     openai: {
       modelsPaths: function () { return ['/v1/models', '/models']; },
@@ -512,7 +512,7 @@
     }
   };
 
-  /* SSE parsing — buffered, handles split chunks and both vendors */
+  /* SSE parsing ? buffered, handles split chunks and both vendors */
   function createSSEParser(format) {
     var buf = '';
     var meta = {};
@@ -554,7 +554,7 @@
                 else if (typeof j.text === 'string') out += j.text;
                 else if (typeof j.token === 'string') out += j.token;
               }
-            } catch (e) { /* partial JSON — wait for more */ }
+            } catch (e) { /* partial JSON ? wait for more */ }
           }
         }
         return out;
@@ -573,7 +573,7 @@
     };
   }
 
-  /* ═══════════ markdown-lite renderer ═══════════ */
+  /* ??????????? markdown-lite renderer ??????????? */
   function renderMarkdown(src) {
     var text = String(src == null ? '' : src);
     var blocks = [];
@@ -598,7 +598,7 @@
       var b = blocks[Number(n)];
       return '<pre><code class="language-' + esc(b.lang) + '">' + esc(b.code) + '</code></pre>';
     });
-    return html || '<span class="text-muted"><span class="typing-dot">•</span> <span class="typing-dot">•</span> <span class="typing-dot">•</span></span>';
+    return html || '<span class="text-muted"><span class="typing-dot">?</span> <span class="typing-dot">?</span> <span class="typing-dot">?</span></span>';
   }
 
   /* Pull model / usage / cost out of a non-stream response body. Vendors disagree on
@@ -617,7 +617,7 @@
     return { content: content || '', meta: meta };
   }
 
-  /* ═══════════ chat UI ═══════════ */
+  /* ??????????? chat UI ??????????? */
   /* One glanceable strip under every assistant reply: what ran, what it cost,
      how long. Estimated costs are labelled so a number is never silently invented. */
   function metaFoot(meta) {
@@ -650,9 +650,9 @@
     if (meta.latency) {
       var secs = meta.latency / 1000;
       var detail = secs.toFixed(2) + 's';
-      if (meta.ttfb) detail += ' · first token ' + (meta.ttfb / 1000).toFixed(2) + 's';
-      if (u && u.output && secs > 0) detail += ' · ' + Math.round(u.output / secs) + ' tok/s';
-      chips.push(chip('Total latency · time to first token · generation speed', '<span class="mono text-slate-200">' + esc(detail) + '</span>', 'border-line bg-line/50'));
+      if (meta.ttfb) detail += ' ? first token ' + (meta.ttfb / 1000).toFixed(2) + 's';
+      if (u && u.output && secs > 0) detail += ' ? ' + Math.round(u.output / secs) + ' tok/s';
+      chips.push(chip('Total latency ? time to first token ? generation speed', '<span class="mono text-slate-200">' + esc(detail) + '</span>', 'border-line bg-line/50'));
     }
     if (!chips.length) return '';
     return '<div class="mt-2 flex flex-wrap gap-1.5 pt-2 border-t border-line/60">' + chips.join('') + '</div>';
@@ -685,9 +685,9 @@
       el.conversation.innerHTML =
         '<div class="h-full flex items-center justify-center py-16 text-center">' +
         '<div class="max-w-sm space-y-2">' +
-        '<div class="text-3xl">⌁</div>' +
+        '<div class="text-3xl">?</div>' +
         '<p class="font-medium">Validate any OpenAI-compatible API</p>' +
-        '<p class="text-xs text-muted">1. Paste base URL + token &nbsp;→&nbsp; 2. Fetch models (or type a model ID manually) &nbsp;→&nbsp; 3. Chat. Streaming, params, and history included.</p>' +
+        '<p class="text-xs text-muted">1. Paste base URL + token &nbsp;?&nbsp; 2. Fetch models (or type a model ID manually) &nbsp;?&nbsp; 3. Chat. Streaming, params, and history included.</p>' +
         '</div></div>';
       return;
     }
@@ -720,10 +720,10 @@
       function () { toast('Copy failed', 'error'); });
   });
 
-  /* ═══════════ fetch models ═══════════ */
+  /* ??????????? fetch models ??????????? */
   function setFetching(on) {
     el.fetchModelsBtn.disabled = on;
-    el.fetchModelsBtn.textContent = on ? 'Fetching…' : 'Fetch models';
+    el.fetchModelsBtn.textContent = on ? 'Fetching?' : 'Fetch models';
   }
 
   function fetchModels() {
@@ -734,7 +734,7 @@
     var paths = adapter.modelsPaths();
 
     setFetching(true);
-    setStatus('busy', 'Fetching models…');
+    setStatus('busy', 'Fetching models?');
     el.fetchHint.textContent = '';
     el.corsBanner.classList.add('hidden');
 
@@ -743,7 +743,7 @@
         setFetching(false);
         setStatus('err', 'Fetch failed');
         el.fetchHint.textContent = 'Tried: ' + paths.map(function (p) { return joinUrl(base, p); }).join(' , ');
-        toast('Could not fetch models — you can still type a model ID manually', 'error');
+        toast('Could not fetch models ? you can still type a model ID manually', 'error');
         return;
       }
       var url = joinUrl(base, paths[i]);
@@ -754,11 +754,11 @@
         })
         .then(function (data) {
           var models = adapter.parseModels(data);
-          if (!models.length) throw new Error('No models in response — check inspector for shape');
+          if (!models.length) throw new Error('No models in response ? check inspector for shape');
           populateModels(models);
           setFetching(false);
           var via = lastRoute === 'proxy' ? ' via proxy' : '';
-          setStatus('ok', 'Connected' + via + ' · ' + models.length + ' models');
+          setStatus('ok', 'Connected' + via + ' ? ' + models.length + ' models');
           el.fetchHint.textContent = models.length + ' models loaded' + via + ' from ' + url;
           toast(models.length + ' models loaded', 'ok');
           if (!cfg.model || models.indexOf(cfg.model) === -1) {
@@ -772,7 +772,7 @@
             setStatus('err', 'Blocked by CORS');
             el.corsBanner.classList.remove('hidden');
             el.fetchHint.textContent = 'Browser blocked the request (CORS). Type a model ID manually to still try chat.';
-            toast('CORS blocked — manual model entry still works', 'error');
+            toast('CORS blocked ? manual model entry still works', 'error');
             return;
           }
           if (i + 1 < paths.length) { attempt(i + 1); return; }
@@ -785,14 +785,14 @@
     attempt(0);
   }
 
-  /* ═══════════ model combobox ═══════════ */
+  /* ??????????? model combobox ??????????? */
   var allModels = [];
   var modelMatches = [];
   var modelActive = -1;
 
   function populateModels(models) {
     allModels = models;
-    el.modelCount.textContent = models.length + ' models — click the field to browse, type to filter';
+    el.modelCount.textContent = models.length + ' models ? click the field to browse, type to filter';
     if (!el.modelDropdown.classList.contains('hidden')) renderModelOptions();
   }
 
@@ -802,7 +802,7 @@
     if (modelActive >= modelMatches.length) modelActive = -1;
     if (!modelMatches.length) {
       el.modelDropdown.innerHTML = '<div class="px-2.5 py-1.5 text-xs text-muted">' +
-        (allModels.length ? 'No model matches the typed text — pressing Enter uses it as-is' : 'No models loaded — fetch models or type an ID') +
+        (allModels.length ? 'No model matches the typed text ? pressing Enter uses it as-is' : 'No models loaded ? fetch models or type an ID') +
         '</div>';
       el.modelInput.removeAttribute('aria-activedescendant');
       return;
@@ -857,14 +857,14 @@
 
   function populateModelsFromGeneric() {
     allModels = GENERIC_MODELS.slice();
-    el.modelCount.textContent = 'No models fetched — type an ID or click Fetch models';
+    el.modelCount.textContent = 'No models fetched ? type an ID or click Fetch models';
   }
 
-  /* ═══════════ send chat ═══════════ */
+  /* ??????????? send chat ??????????? */
   function setBusy(on) {
     isStreaming = on;
     el.sendBtn.disabled = on;
-    el.sendBtn.textContent = on ? 'Sending…' : 'Send';
+    el.sendBtn.textContent = on ? 'Sending?' : 'Send';
     el.stopBtn.classList.toggle('hidden', !on);
   }
 
@@ -904,7 +904,7 @@
     var assistBody = assistNode.querySelector('.msg-body');
 
     setBusy(true);
-    setStatus('busy', cfg.stream ? 'Streaming…' : 'Requesting…');
+    setStatus('busy', cfg.stream ? 'Streaming?' : 'Requesting?');
     aborter = new AbortController();
     debug({ step: 'POST chat', url: url, format: cfg.apiFormat, body: body });
 
@@ -916,8 +916,8 @@
     }, 'POST chat').then(function (res) {
       if (!res.ok) {
         return res.text().then(function (t) {
-          debug({ step: 'HTTP ' + res.status + ' — raw response', url: url, body: t.slice(0, 2000) });
-          throw new Error(friendlyHttp(res.status) + ' — raw response in the debug inspector');
+          debug({ step: 'HTTP ' + res.status + ' ? raw response', url: url, body: t.slice(0, 2000) });
+          throw new Error(friendlyHttp(res.status) + ' ? raw response in the debug inspector');
         });
       }
       var ctype = (res.headers.get('content-type') || '').toLowerCase();
@@ -959,7 +959,7 @@
       var msg;
       if (err && err.name === 'AbortError') msg = 'Stopped by user.';
       else       if (isCorsTypeError(err)) {
-        msg = 'Blocked by CORS — the API refused this browser origin. Same-origin proxy also failed; check the API base URL.';
+        msg = 'Blocked by CORS ? the API refused this browser origin. Same-origin proxy also failed; check the API base URL.';
         el.corsBanner.classList.remove('hidden');
       } else msg = 'Error: ' + (err.message || err);
       debug({ step: 'POST chat FAILED', url: url, error: String((err && err.message) || err) });
@@ -984,9 +984,9 @@
     if (!isError) {
       var u = usageTotals(meta.usage);
       var cost = meta.cost != null ? fmtCost(meta.cost) : fmtCost(estimateCost(msg.model, meta.usage));
-      var pill = 'Connected' + (lastRoute === 'proxy' ? ' via proxy' : '') + ' · ' + (msg.model || '?');
-      if (u && u.total != null) pill += ' · ' + u.total.toLocaleString() + ' tok';
-      if (cost) pill += ' · ' + cost;
+      var pill = 'Connected' + (lastRoute === 'proxy' ? ' via proxy' : '') + ' ? ' + (msg.model || '?');
+      if (u && u.total != null) pill += ' ? ' + u.total.toLocaleString() + ' tok';
+      if (cost) pill += ' ? ' + cost;
       setStatus('ok', pill);
     }
     // replace streaming node with final node (adds Copy button)
@@ -996,13 +996,13 @@
     el.conversation.scrollTop = el.conversation.scrollHeight;
   }
 
-  /* ═══════════ composer ═══════════ */
+  /* ??????????? composer ??????????? */
   function autoGrow() {
     el.composer.style.height = 'auto';
     el.composer.style.height = Math.min(el.composer.scrollHeight, 192) + 'px';
   }
 
-  /* ═══════════ wiring ═══════════ */
+  /* ??????????? wiring ??????????? */
   function bindConfig() {
     var cfg = state.config;
     var sync = function () { save(); };
@@ -1158,1429 +1158,18 @@
     populateModelsFromGeneric();
     if (cfg.model) {
       allModels = [cfg.model].concat(allModels.filter(function (m) { return m !== cfg.model; }));
-      el.modelCount.textContent = 'Current model: ' + cfg.model + ' — Fetch models for the full list';
+      el.modelCount.textContent = 'Current model: ' + cfg.model + ' ? Fetch models for the full list';
     }
   }
 
-  /* ═══════════ init ═══════════ */
+  /* ??????????? init ??????????? */
   load();
   activeConv();
   bindConfig();
   paintConfig();
   renderConversation();
   autoGrow();
-  setStatus('idle', state.config.baseUrl ? 'Configured — fetch models' : 'Not connected');
-})();
-</script>
-</body>
-</html>
- + c.toFixed(5) : ', same-origin /api proxy only on CORS block (or Always mode) ── */
-  var lastRoute = 'direct'; // 'direct' | 'proxy' — set by routeFetch, read for status text
-  function proxiedUrl(proxyBase, apiBase, fullUrl) {
-    var base = normBase(apiBase);
-    var path = fullUrl.slice(base.length) || '/';
-    var sep = path.indexOf('?') === -1 ? '?' : '&';
-    // Empty proxyBase = same-origin Pages Function (/api/...). Set proxyUrl only for a standalone Worker.
-    var prefix = proxyBase ? normBase(proxyBase) : '';
-    return prefix + '/api' + path + sep + 'target=' + encodeURIComponent(base);
-  }
-  function routeFetch(fullUrl, init, label) {
-    var cfg = state.config;
-    var mode = cfg.proxyMode || 'auto';
-    var proxyBase = normBase(cfg.proxyUrl);
-    init = init || {};
-
-    var attemptDirect = function () {
-      lastRoute = 'direct';
-      debug({ step: label || 'request', route: 'direct', url: fullUrl });
-      return fetch(fullUrl, init);
-    };
-    var attemptProxy = function (reason) {
-      lastRoute = 'proxy';
-      var out = {};
-      Object.keys(init.headers || {}).forEach(function (k) {
-        if (/^authorization$/i.test(k) || /^x-api-key$/i.test(k)) return;
-        out[k] = init.headers[k];
-      });
-      if (cfg.token) out['X-User-Token'] = trimmedToken();
-      var pUrl = proxiedUrl(proxyBase, cfg.baseUrl, fullUrl);
-      debug({ step: label || 'request', route: 'proxy', url: pUrl, reason: reason });
-      var pInit = { method: init.method, headers: out };
-      if (init.body !== undefined) pInit.body = init.body;
-      if (init.signal) pInit.signal = init.signal;
-      return fetch(pUrl, pInit);
-    };
-
-    if (mode === 'proxy') {
-      return attemptProxy('mode=always-proxy');
-    }
-    if (mode === 'direct') return attemptDirect();
-    // auto: direct first, same-origin proxy only when the browser blocks
-    return attemptDirect().catch(function (err) {
-      if (isCorsTypeError(err)) {
-        toast('Direct request blocked (CORS) — retrying via same-origin proxy…', 'info');
-        return attemptProxy('cors-fallback');
-      }
-      throw err;
-    });
-  }
-
-  /* ═══════════ adapters ═══════════ */
-  var adapters = {
-    openai: {
-      modelsPaths: function () { return ['/v1/models', '/models']; },
-      chatPath: function () { return '/v1/chat/completions'; },
-      headers: function (t) {
-        var h = { 'Content-Type': 'application/json' };
-        if (t) h.Authorization = 'Bearer ' + t;
-        return h;
-      },
-      parseModels: function (res) {
-        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id; }).filter(Boolean);
-        if (res && Array.isArray(res.models)) return res.models.map(function (m) { return m.id || m.name || m; });
-        return [];
-      },
-      requestBody: function (model, messages, cfg, stream) {
-        return { model: model, messages: messages, stream: stream,
-          temperature: cfg.temperature, max_tokens: cfg.maxTokens, top_p: cfg.topP };
-      },
-      parseNonStream: function (res) {
-        try { return res.choices[0].message.content || ''; } catch (e) { return ''; }
-      }
-    },
-    anthropic: {
-      modelsPaths: function () { return ['/v1/models', '/models']; },
-      chatPath: function () { return '/v1/messages'; },
-      headers: function (t) {
-        var h = { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' };
-        if (t) h['x-api-key'] = t;
-        return h;
-      },
-      parseModels: function (res) {
-        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id; }).filter(Boolean);
-        return [];
-      },
-      requestBody: function (model, messages, cfg, stream) {
-        var sys = '', rest = [];
-        messages.forEach(function (m) {
-          if (m.role === 'system') sys += (sys ? '\n' : '') + m.content;
-          else rest.push({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content });
-        });
-        var b = { model: model, messages: rest, stream: stream,
-          max_tokens: cfg.maxTokens, temperature: cfg.temperature, top_p: cfg.topP };
-        if (sys) b.system = sys;
-        return b;
-      },
-      parseNonStream: function (res) {
-        try {
-          return (res.content || []).map(function (b) { return b.text || ''; }).join('');
-        } catch (e) { return ''; }
-      }
-    },
-    custom: {
-      modelsPaths: function () { return [state.config.customModelsPath || '/models']; },
-      chatPath: function () { return state.config.customChatPath || '/chat'; },
-      headers: function (t) {
-        var h = { 'Content-Type': 'application/json' };
-        if (t) h.Authorization = 'Bearer ' + t;
-        return h;
-      },
-      parseModels: function (res) {
-        if (Array.isArray(res)) return res.map(function (m) { return m.id || m.name || String(m); });
-        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id || m; });
-        if (res && Array.isArray(res.models)) return res.models.map(function (m) { return m.id || m.name || String(m); });
-        return [];
-      },
-      requestBody: function (model, messages, cfg, stream) {
-        return { model: model, messages: messages, stream: stream,
-          temperature: cfg.temperature, max_tokens: cfg.maxTokens, top_p: cfg.topP };
-      },
-      parseNonStream: function (res) {
-        return res.content || res.message || res.text || res.output || JSON.stringify(res);
-      }
-    }
-  };
-
-  /* SSE parsing — buffered, handles split chunks and both vendors */
-  function createSSEParser(format) {
-    var buf = '';
-    return {
-      push: function (text) {
-        buf += text;
-        var out = '';
-        var idx;
-        while ((idx = buf.indexOf('\n\n')) !== -1) {
-          var event = buf.slice(0, idx);
-          buf = buf.slice(idx + 2);
-          var lines = event.split('\n');
-          for (var i = 0; i < lines.length; i++) {
-            var line = lines[i].trim();
-            if (line.indexOf('data:') !== 0) continue;
-            var data = line.slice(5).trim();
-            if (!data || data === '[DONE]') continue;
-            try {
-              var j = JSON.parse(data);
-              if (format === 'anthropic') {
-                if (j.type === 'content_block_delta' && j.delta && j.delta.text) out += j.delta.text;
-                else if (j.delta && j.delta.text) out += j.delta.text;
-              } else {
-                if (j.choices && j.choices[0]) {
-                  var c = j.choices[0];
-                  if (c.delta && typeof c.delta.content === 'string') out += c.delta.content;
-                  else if (typeof c.text === 'string') out += c.text;
-                  else if (c.message && c.message.content) out += c.message.content;
-                } else if (typeof j.content === 'string') out += j.content;
-                else if (typeof j.text === 'string') out += j.text;
-                else if (typeof j.token === 'string') out += j.token;
-              }
-            } catch (e) { /* partial JSON — wait for more */ }
-          }
-        }
-        return out;
-      },
-      flush: function () {
-        var rest = buf.trim(); buf = '';
-        if (!rest || rest === '[DONE]') return '';
-        if (rest.indexOf('data:') === 0) rest = rest.slice(5).trim();
-        try {
-          var j = JSON.parse(rest);
-          if (j.choices && j.choices[0] && j.choices[0].delta) return j.choices[0].delta.content || '';
-        } catch (e) {}
-        return '';
-      }
-    };
-  }
-
-  /* ═══════════ markdown-lite renderer ═══════════ */
-  function renderMarkdown(src) {
-    var text = String(src == null ? '' : src);
-    var blocks = [];
-    // extract fenced code blocks first
-    text = text.replace(/```(\w*)\n?([\s\S]*?)(?:```|$)/g, function (_, lang, code) {
-      blocks.push({ lang: (lang || 'plaintext').toLowerCase(), code: code.replace(/\n$/, '') });
-      return '\u0000BLOCK' + (blocks.length - 1) + '\u0000';
-    });
-    var html = esc(text);
-    html = html
-      .replace(/^### (.*)$/gm, '<strong>$1</strong>')
-      .replace(/^## (.*)$/gm, '<strong>$1</strong>')
-      .replace(/^# (.*)$/gm, '<strong>$1</strong>')
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
-      .replace(/`([^`\n]+)`/g, '<code class="inline">$1</code>')
-      .split(/\n{2,}/).map(function (para) {
-        if (para.indexOf('\u0000BLOCK') !== -1) return para;
-        return '<p>' + para.replace(/\n/g, '<br/>') + '</p>';
-      }).join('');
-    html = html.replace(/\u0000BLOCK(\d+)\u0000/g, function (_, n) {
-      var b = blocks[Number(n)];
-      return '<pre><code class="language-' + esc(b.lang) + '">' + esc(b.code) + '</code></pre>';
-    });
-    return html || '<span class="text-muted"><span class="typing-dot">•</span> <span class="typing-dot">•</span> <span class="typing-dot">•</span></span>';
-  }
-
-  /* ═══════════ chat UI ═══════════ */
-  function bubble(role, content, opts) {
-    opts = opts || {};
-    var wrap = document.createElement('div');
-    wrap.className = 'msg flex gap-2.5 ' + (role === 'user' ? 'justify-end' : 'justify-start');
-    wrap.dataset.msgId = opts.id || '';
-    var inner;
-    if (role === 'user') {
-      inner = '<div class="max-w-[85%] bg-primary/15 border border-primary/25 rounded-xl px-3.5 py-2.5">' +
-        '<div class="msg-body text-sm whitespace-pre-wrap break-words">' + esc(content) + '</div></div>';
-    } else {
-      inner = '<div class="max-w-[85%] bg-panel border border-line rounded-xl px-3.5 py-2.5 w-fit">' +
-        '<div class="msg-body text-sm break-words">' + renderMarkdown(content) + '</div>' +
-        (opts.streaming ? '' : '<button class="copy-btn mt-1.5 text-[11px] text-muted hover:text-slate-200" data-copy>Copy</button>') +
-        '</div>';
-    }
-    wrap.innerHTML = inner;
-    return wrap;
-  }
-
-  function renderConversation() {
-    var conv = activeConv();
-    el.conversation.innerHTML = '';
-    if (!conv.messages.length) {
-      el.conversation.innerHTML =
-        '<div class="h-full flex items-center justify-center py-16 text-center">' +
-        '<div class="max-w-sm space-y-2">' +
-        '<div class="text-3xl">⌁</div>' +
-        '<p class="font-medium">Validate any OpenAI-compatible API</p>' +
-        '<p class="text-xs text-muted">1. Paste base URL + token &nbsp;→&nbsp; 2. Fetch models (or type a model ID manually) &nbsp;→&nbsp; 3. Chat. Streaming, params, and history included.</p>' +
-        '</div></div>';
-      return;
-    }
-    conv.messages.forEach(function (m) {
-      el.conversation.appendChild(bubble(m.role, m.content, { id: m.id }));
-    });
-    highlightNewCode();
-    el.conversation.scrollTop = el.conversation.scrollHeight;
-  }
-
-  function highlightNewCode() {
-    el.conversation.querySelectorAll('pre code:not([data-hl])').forEach(function (code) {
-      try {
-        if (window.hljs) {
-          if (hljs.getLanguage(code.className.replace('language-', ''))) hljs.highlightElement(code);
-          else hljs.highlightElement(code);
-        }
-        code.setAttribute('data-hl', '1');
-      } catch (e) { /* ignore */ }
-    });
-  }
-
-  el.conversation.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-copy]');
-    if (!btn) return;
-    var body = btn.closest('.msg').querySelector('.msg-body');
-    var text = body ? body.innerText : '';
-    navigator.clipboard.writeText(text).then(
-      function () { toast('Copied to clipboard', 'ok'); },
-      function () { toast('Copy failed', 'error'); });
-  });
-
-  /* ═══════════ fetch models ═══════════ */
-  function setFetching(on) {
-    el.fetchModelsBtn.disabled = on;
-    el.fetchModelsBtn.textContent = on ? 'Fetching…' : 'Fetch models';
-  }
-
-  function fetchModels() {
-    var cfg = state.config;
-    var base = normBase(cfg.baseUrl);
-    if (!base) { toast('Enter an API base URL first', 'error'); el.apiBase.focus(); return; }
-    var adapter = adapters[cfg.apiFormat] || adapters.openai;
-    var paths = adapter.modelsPaths();
-
-    setFetching(true);
-    setStatus('busy', 'Fetching models…');
-    el.fetchHint.textContent = '';
-    el.corsBanner.classList.add('hidden');
-
-    var attempt = function (i) {
-      if (i >= paths.length) {
-        setFetching(false);
-        setStatus('err', 'Fetch failed');
-        el.fetchHint.textContent = 'Tried: ' + paths.map(function (p) { return joinUrl(base, p); }).join(' , ');
-        toast('Could not fetch models — you can still type a model ID manually', 'error');
-        return;
-      }
-      var url = joinUrl(base, paths[i]);
-      routeFetch(url, { method: 'GET', headers: adapter.headers(trimmedToken()) }, 'GET models')
-        .then(function (res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
-          return res.json();
-        })
-        .then(function (data) {
-          var models = adapter.parseModels(data);
-          if (!models.length) throw new Error('No models in response — check inspector for shape');
-          populateModels(models);
-          setFetching(false);
-          var via = lastRoute === 'proxy' ? ' via proxy' : '';
-          setStatus('ok', 'Connected' + via + ' · ' + models.length + ' models');
-          el.fetchHint.textContent = models.length + ' models loaded' + via + ' from ' + url;
-          toast(models.length + ' models loaded', 'ok');
-          if (!cfg.model || models.indexOf(cfg.model) === -1) {
-            cfg.model = models[0]; el.modelInput.value = models[0]; save();
-          }
-        })
-        .catch(function (err) {
-          debug({ step: 'GET models FAILED', url: url, error: String(err && err.message || err) });
-          if (isCorsTypeError(err)) {
-            setFetching(false);
-            setStatus('err', 'Blocked by CORS');
-            el.corsBanner.classList.remove('hidden');
-            el.fetchHint.textContent = 'Browser blocked the request (CORS). Type a model ID manually to still try chat.';
-            toast('CORS blocked — manual model entry still works', 'error');
-            return;
-          }
-          if (i + 1 < paths.length) { attempt(i + 1); return; }
-          setFetching(false);
-          setStatus('err', 'Fetch failed');
-          el.fetchHint.textContent = String(err.message || err);
-          toast('Fetch failed: ' + (err.message || err), 'error');
-        });
-    };
-    attempt(0);
-  }
-
-  /* ═══════════ model combobox ═══════════ */
-  var allModels = [];
-  var modelMatches = [];
-  var modelActive = -1;
-
-  function populateModels(models) {
-    allModels = models;
-    el.modelCount.textContent = models.length + ' models — click the field to browse, type to filter';
-    if (!el.modelDropdown.classList.contains('hidden')) renderModelOptions();
-  }
-
-  function renderModelOptions() {
-    var q = el.modelInput.value.trim().toLowerCase();
-    modelMatches = q ? allModels.filter(function (m) { return String(m).toLowerCase().indexOf(q) !== -1; }) : allModels.slice();
-    if (modelActive >= modelMatches.length) modelActive = -1;
-    if (!modelMatches.length) {
-      el.modelDropdown.innerHTML = '<div class="px-2.5 py-1.5 text-xs text-muted">' +
-        (allModels.length ? 'No model matches the typed text — pressing Enter uses it as-is' : 'No models loaded — fetch models or type an ID') +
-        '</div>';
-      el.modelInput.removeAttribute('aria-activedescendant');
-      return;
-    }
-    el.modelDropdown.innerHTML = modelMatches.map(function (m, i) {
-      return '<div role="option" id="modelOpt' + i + '" data-model="' + esc(m) + '" aria-selected="' + (i === modelActive) + '" ' +
-        'class="mono text-sm px-2.5 py-1.5 mx-1 rounded cursor-pointer truncate ' + (i === modelActive ? 'bg-line' : 'hover:bg-line') + '">' +
-        esc(m) + '</div>';
-    }).join('');
-    if (modelActive >= 0) el.modelInput.setAttribute('aria-activedescendant', 'modelOpt' + modelActive);
-    else el.modelInput.removeAttribute('aria-activedescendant');
-  }
-
-  function positionModelDropdown() {
-    var r = el.modelInput.getBoundingClientRect();
-    var spaceBelow = window.innerHeight - r.bottom;
-    var dropUp = spaceBelow < 250 && r.top > spaceBelow;
-    el.modelDropdown.style.top = dropUp ? 'auto' : 'calc(100% + 4px)';
-    el.modelDropdown.style.bottom = dropUp ? 'calc(100% + 4px)' : 'auto';
-    el.modelDropdown.style.maxHeight = Math.max(120, Math.min(240, (dropUp ? r.top : spaceBelow) - 12)) + 'px';
-  }
-
-  function openModelDropdown() {
-    el.modelDropdown.classList.remove('hidden');
-    el.modelInput.setAttribute('aria-expanded', 'true');
-    positionModelDropdown();
-    renderModelOptions();
-  }
-  function closeModelDropdown() {
-    el.modelDropdown.classList.add('hidden');
-    el.modelInput.setAttribute('aria-expanded', 'false');
-    el.modelInput.removeAttribute('aria-activedescendant');
-    modelActive = -1;
-  }
-  function isModelDropdownOpen() { return !el.modelDropdown.classList.contains('hidden'); }
-
-  function setModelActive(i) {
-    modelActive = Math.max(-1, Math.min(i, modelMatches.length - 1));
-    renderModelOptions();
-    var node = modelActive >= 0 && el.modelDropdown.querySelector('#modelOpt' + modelActive);
-    if (node) node.scrollIntoView({ block: 'nearest' });
-  }
-
-  function selectModel(m) {
-    var cfg = state.config;
-    el.modelInput.value = m;
-    cfg.model = m;
-    save();
-    closeModelDropdown();
-    el.modelInput.focus();
-  }
-
-  function populateModelsFromGeneric() {
-    allModels = GENERIC_MODELS.slice();
-    el.modelCount.textContent = 'No models fetched — type an ID or click Fetch models';
-  }
-
-  /* ═══════════ send chat ═══════════ */
-  function setBusy(on) {
-    isStreaming = on;
-    el.sendBtn.disabled = on;
-    el.sendBtn.textContent = on ? 'Sending…' : 'Send';
-    el.stopBtn.classList.toggle('hidden', !on);
-  }
-
-  function sendMessage() {
-    var text = el.composer.value.trim();
-    if (!text || isStreaming) return;
-    var cfg = state.config;
-    var base = normBase(cfg.baseUrl);
-    if (!base) { toast('Enter an API base URL first', 'error'); el.apiBase.focus(); return; }
-    if (!cfg.model) { toast('Enter a model ID (fetch or type manually)', 'error'); el.modelInput.focus(); return; }
-
-    var conv = activeConv();
-    var userMsg = { id: 'm_' + Date.now().toString(36), role: 'user', content: text, ts: new Date().toISOString() };
-    conv.messages.push(userMsg);
-    if (conv.messages.length === 1) conv.title = text.slice(0, 48);
-    save();
-
-    el.composer.value = '';
-    autoGrow();
-    renderConversation();
-
-    var adapter = adapters[cfg.apiFormat] || adapters.openai;
-    var url = joinUrl(base, adapter.chatPath());
-    var history = [{ role: 'system', content: cfg.systemPrompt }].concat(
-      conv.messages.filter(function (m) { return m.content && !m.error; }).map(function (m) {
-        return { role: m.role, content: m.content };
-      })
-    );
-    var body = adapter.requestBody(cfg.model, history, cfg, cfg.stream);
-
-    var assistId = 'm_' + (Date.now() + 1).toString(36);
-    var assistNode = bubble('assistant', '', { id: assistId, streaming: true });
-    el.conversation.appendChild(assistNode);
-    el.conversation.scrollTop = el.conversation.scrollHeight;
-    var assistBody = assistNode.querySelector('.msg-body');
-
-    setBusy(true);
-    setStatus('busy', cfg.stream ? 'Streaming…' : 'Requesting…');
-    aborter = new AbortController();
-    debug({ step: 'POST chat', url: url, format: cfg.apiFormat, body: body });
-
-    routeFetch(url, {
-      method: 'POST',
-      headers: adapter.headers(trimmedToken()),
-      body: JSON.stringify(body),
-      signal: aborter.signal
-    }, 'POST chat').then(function (res) {
-      if (!res.ok) {
-        return res.text().then(function (t) {
-          debug({ step: 'HTTP ' + res.status + ' — raw response', url: url, body: t.slice(0, 2000) });
-          throw new Error(friendlyHttp(res.status) + ' — raw response in the debug inspector');
-        });
-      }
-      var ctype = (res.headers.get('content-type') || '').toLowerCase();
-      if (!cfg.stream || !res.body || ctype.indexOf('text/event-stream') === -1) {
-        var isJson = ctype.indexOf('json') !== -1;
-        return (isJson ? res.json() : res.text()).then(function (data) {
-          var content = (typeof data === 'string') ? data : adapter.parseNonStream(data);
-          assistBody.innerHTML = renderMarkdown(content);
-          highlightNewCode();
-          finishAssistant(conv, assistId, assistNode, content || '(empty response)');
-        });
-      }
-      var reader = res.body.getReader();
-      var decoder = new TextDecoder();
-      var parser = createSSEParser(cfg.apiFormat);
-      var full = '';
-      var pump = function () {
-        return reader.read().then(function (r) {
-          if (r.done) {
-            full += parser.flush();
-            assistBody.innerHTML = renderMarkdown(full);
-            highlightNewCode();
-            finishAssistant(conv, assistId, assistNode, full || '(empty response)');
-            return;
-          }
-          var delta = parser.push(decoder.decode(r.value, { stream: true }));
-          if (delta) {
-            full += delta;
-            assistBody.innerHTML = renderMarkdown(full);
-            highlightNewCode();
-            el.conversation.scrollTop = el.conversation.scrollHeight;
-          }
-          return pump();
-        });
-      };
-      return pump();
-    }).catch(function (err) {
-      var msg;
-      if (err && err.name === 'AbortError') msg = 'Stopped by user.';
-      else       if (isCorsTypeError(err)) {
-        msg = 'Blocked by CORS — the API refused this browser origin. Same-origin proxy also failed; check the API base URL.';
-        el.corsBanner.classList.remove('hidden');
-      } else msg = 'Error: ' + (err.message || err);
-      debug({ step: 'POST chat FAILED', url: url, error: String((err && err.message) || err) });
-      assistBody.innerHTML = renderMarkdown(msg);
-      finishAssistant(conv, assistId, assistNode, msg, true);
-      setStatus('err', 'Request failed');
-      toast(msg.slice(0, 120), 'error');
-    });
-  }
-
-  function finishAssistant(conv, id, node, content, isError) {
-    conv.messages.push({ id: id, role: 'assistant', content: content, ts: new Date().toISOString(), error: !!isError });
-    save();
-    setBusy(false);
-    if (!isError) setStatus('ok', 'Connected' + (lastRoute === 'proxy' ? ' via proxy' : '') + ' · ' + state.config.model);
-    // replace streaming node with final node (adds Copy button)
-    var final = bubble('assistant', content, { id: id });
-    node.replaceWith(final);
-    highlightNewCode();
-    el.conversation.scrollTop = el.conversation.scrollHeight;
-  }
-
-  /* ═══════════ composer ═══════════ */
-  function autoGrow() {
-    el.composer.style.height = 'auto';
-    el.composer.style.height = Math.min(el.composer.scrollHeight, 192) + 'px';
-  }
-
-  /* ═══════════ wiring ═══════════ */
-  function bindConfig() {
-    var cfg = state.config;
-    var sync = function () { save(); };
-
-    el.apiBase.addEventListener('input', function () { cfg.baseUrl = el.apiBase.value; sync(); });
-    el.apiToken.addEventListener('input', function () { cfg.token = el.apiToken.value; sync(); });
-    el.apiToken.addEventListener('blur', function () {
-      var t = el.apiToken.value.trim();
-      if (t !== el.apiToken.value) { el.apiToken.value = t; cfg.token = t; sync(); }
-    });
-    el.forgetToken.addEventListener('click', function () {
-      cfg.token = ''; el.apiToken.value = ''; save();
-      toast('Token cleared from this browser', 'info');
-    });
-    el.tokenPeek.addEventListener('click', function () {
-      var show = el.apiToken.type === 'password';
-      el.apiToken.type = show ? 'text' : 'password';
-      el.tokenPeek.textContent = show ? 'Hide' : 'Show';
-    });
-    el.apiFormat.addEventListener('change', function () {
-      cfg.apiFormat = el.apiFormat.value;
-      el.customEndpoints.classList.toggle('hidden', cfg.apiFormat !== 'custom');
-      sync();
-    });
-    el.customModelsPath.addEventListener('input', function () { cfg.customModelsPath = el.customModelsPath.value; sync(); });
-    el.customChatPath.addEventListener('input', function () { cfg.customChatPath = el.customChatPath.value; sync(); });
-    el.proxyMode.addEventListener('change', function () { cfg.proxyMode = el.proxyMode.value; sync(); });
-    el.proxyUrl.addEventListener('input', function () { cfg.proxyUrl = el.proxyUrl.value.trim(); sync(); });
-    el.modelInput.addEventListener('input', function () { cfg.model = el.modelInput.value.trim(); sync(); if (isModelDropdownOpen()) renderModelOptions(); });
-    el.modelInput.addEventListener('focus', openModelDropdown);
-    el.modelInput.addEventListener('click', openModelDropdown);
-    el.modelInput.addEventListener('blur', closeModelDropdown);
-    el.modelInput.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (!isModelDropdownOpen()) openModelDropdown();
-        else setModelActive(modelActive + 1);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (isModelDropdownOpen()) setModelActive(modelActive - 1);
-      } else if (e.key === 'Enter') {
-        if (isModelDropdownOpen() && modelActive >= 0) { e.preventDefault(); selectModel(modelMatches[modelActive]); }
-        else closeModelDropdown();
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        closeModelDropdown();
-        el.modelInput.blur();
-      }
-    });
-    el.modelToggle.addEventListener('mousedown', function (e) { e.preventDefault(); });
-    el.modelToggle.addEventListener('click', function () {
-      if (isModelDropdownOpen()) { closeModelDropdown(); el.modelInput.focus(); }
-      else { el.modelInput.focus(); openModelDropdown(); }
-    });
-    el.modelDropdown.addEventListener('mousedown', function (e) {
-      var opt = e.target.closest('[data-model]');
-      if (!opt) return;
-      e.preventDefault();
-      selectModel(opt.dataset.model);
-    });
-    document.addEventListener('mousedown', function (e) {
-      if (isModelDropdownOpen() && !el.modelCombo.contains(e.target)) closeModelDropdown();
-    });
-    el.systemPrompt.addEventListener('input', function () { cfg.systemPrompt = el.systemPrompt.value; sync(); });
-
-    el.temp.addEventListener('input', function () {
-      cfg.temperature = parseFloat(el.temp.value); el.tempVal.textContent = cfg.temperature.toFixed(2); sync();
-    });
-    el.maxTokens.addEventListener('input', function () {
-      cfg.maxTokens = parseInt(el.maxTokens.value, 10); el.tokensVal.textContent = String(cfg.maxTokens); sync();
-    });
-    el.topP.addEventListener('input', function () {
-      cfg.topP = parseFloat(el.topP.value); el.topPVal.textContent = cfg.topP.toFixed(2); sync();
-    });
-    el.streamToggle.addEventListener('change', function () { cfg.stream = el.streamToggle.checked; sync(); });
-
-    el.fetchModelsBtn.addEventListener('click', fetchModels);
-    el.sendBtn.addEventListener('click', sendMessage);
-    el.stopBtn.addEventListener('click', function () { if (aborter) aborter.abort(); });
-    el.composer.addEventListener('input', autoGrow);
-    el.composer.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendMessage(); }
-    });
-
-    el.newChatBtn.addEventListener('click', function () {
-      var c = { id: 'c_' + Date.now().toString(36), title: 'New chat', messages: [], createdAt: new Date().toISOString() };
-      state.conversations.unshift(c);
-      state.activeId = c.id;
-      save(); renderConversation();
-      toast('New chat started', 'info');
-    });
-    el.exportBtn.addEventListener('click', function () {
-      var conv = activeConv();
-      var blob = new Blob([JSON.stringify(conv, null, 2)], { type: 'application/json' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'chat-' + conv.id + '.json';
-      a.click();
-      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
-    });
-    el.importFile.addEventListener('change', function () {
-      var f = el.importFile.files[0];
-      if (!f) return;
-      var r = new FileReader();
-      r.onload = function () {
-        try {
-          var conv = JSON.parse(r.result);
-          if (!conv.messages) throw new Error('bad file');
-          conv.id = 'c_' + Date.now().toString(36);
-          state.conversations.unshift(conv);
-          state.activeId = conv.id;
-          save(); renderConversation();
-          toast('Conversation imported', 'ok');
-        } catch (e) { toast('Import failed: invalid JSON', 'error'); }
-      };
-      r.readAsText(f);
-      el.importFile.value = '';
-    });
-
-    el.corsDismiss.addEventListener('click', function () { el.corsBanner.classList.add('hidden'); });
-    el.themeBtn.addEventListener('click', function () {
-      document.documentElement.classList.toggle('dark');
-    });
-    el.sidebarToggle.addEventListener('click', function () {
-      el.sidebar.classList.toggle('hidden');
-      el.scrim.classList.toggle('hidden');
-    });
-    el.scrim.addEventListener('click', function () {
-      el.sidebar.classList.add('hidden');
-      el.scrim.classList.add('hidden');
-    });
-  }
-
-  function paintConfig() {
-    var cfg = state.config;
-    el.apiBase.value = cfg.baseUrl || '';
-    el.apiToken.value = cfg.token || '';
-    el.apiFormat.value = cfg.apiFormat || 'openai';
-    el.customEndpoints.classList.toggle('hidden', el.apiFormat.value !== 'custom');
-    el.customModelsPath.value = cfg.customModelsPath || '/models';
-    el.customChatPath.value = cfg.customChatPath || '/chat';
-    el.proxyMode.value = cfg.proxyMode || 'auto';
-    el.proxyUrl.value = cfg.proxyUrl || '';
-    el.modelInput.value = cfg.model || '';
-    el.systemPrompt.value = cfg.systemPrompt || '';
-    el.temp.value = cfg.temperature;
-    el.tempVal.textContent = Number(cfg.temperature).toFixed(2);
-    el.maxTokens.value = cfg.maxTokens;
-    el.tokensVal.textContent = String(cfg.maxTokens);
-    el.topP.value = cfg.topP;
-    el.topPVal.textContent = Number(cfg.topP).toFixed(2);
-    el.streamToggle.checked = cfg.stream !== false;
-    populateModelsFromGeneric();
-    if (cfg.model) {
-      allModels = [cfg.model].concat(allModels.filter(function (m) { return m !== cfg.model; }));
-      el.modelCount.textContent = 'Current model: ' + cfg.model + ' — Fetch models for the full list';
-    }
-  }
-
-  /* ═══════════ init ═══════════ */
-  load();
-  activeConv();
-  bindConfig();
-  paintConfig();
-  renderConversation();
-  autoGrow();
-  setStatus('idle', state.config.baseUrl ? 'Configured — fetch models' : 'Not connected');
-})();
-</script>
-</body>
-</html>
- + c.toFixed(4);
-  }
-
-  /* ── Request routing: direct first, same-origin /api proxy only on CORS block (or Always mode) ── */
-  var lastRoute = 'direct'; // 'direct' | 'proxy' — set by routeFetch, read for status text
-  function proxiedUrl(proxyBase, apiBase, fullUrl) {
-    var base = normBase(apiBase);
-    var path = fullUrl.slice(base.length) || '/';
-    var sep = path.indexOf('?') === -1 ? '?' : '&';
-    // Empty proxyBase = same-origin Pages Function (/api/...). Set proxyUrl only for a standalone Worker.
-    var prefix = proxyBase ? normBase(proxyBase) : '';
-    return prefix + '/api' + path + sep + 'target=' + encodeURIComponent(base);
-  }
-  function routeFetch(fullUrl, init, label) {
-    var cfg = state.config;
-    var mode = cfg.proxyMode || 'auto';
-    var proxyBase = normBase(cfg.proxyUrl);
-    init = init || {};
-
-    var attemptDirect = function () {
-      lastRoute = 'direct';
-      debug({ step: label || 'request', route: 'direct', url: fullUrl });
-      return fetch(fullUrl, init);
-    };
-    var attemptProxy = function (reason) {
-      lastRoute = 'proxy';
-      var out = {};
-      Object.keys(init.headers || {}).forEach(function (k) {
-        if (/^authorization$/i.test(k) || /^x-api-key$/i.test(k)) return;
-        out[k] = init.headers[k];
-      });
-      if (cfg.token) out['X-User-Token'] = trimmedToken();
-      var pUrl = proxiedUrl(proxyBase, cfg.baseUrl, fullUrl);
-      debug({ step: label || 'request', route: 'proxy', url: pUrl, reason: reason });
-      var pInit = { method: init.method, headers: out };
-      if (init.body !== undefined) pInit.body = init.body;
-      if (init.signal) pInit.signal = init.signal;
-      return fetch(pUrl, pInit);
-    };
-
-    if (mode === 'proxy') {
-      return attemptProxy('mode=always-proxy');
-    }
-    if (mode === 'direct') return attemptDirect();
-    // auto: direct first, same-origin proxy only when the browser blocks
-    return attemptDirect().catch(function (err) {
-      if (isCorsTypeError(err)) {
-        toast('Direct request blocked (CORS) — retrying via same-origin proxy…', 'info');
-        return attemptProxy('cors-fallback');
-      }
-      throw err;
-    });
-  }
-
-  /* ═══════════ adapters ═══════════ */
-  var adapters = {
-    openai: {
-      modelsPaths: function () { return ['/v1/models', '/models']; },
-      chatPath: function () { return '/v1/chat/completions'; },
-      headers: function (t) {
-        var h = { 'Content-Type': 'application/json' };
-        if (t) h.Authorization = 'Bearer ' + t;
-        return h;
-      },
-      parseModels: function (res) {
-        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id; }).filter(Boolean);
-        if (res && Array.isArray(res.models)) return res.models.map(function (m) { return m.id || m.name || m; });
-        return [];
-      },
-      requestBody: function (model, messages, cfg, stream) {
-        return { model: model, messages: messages, stream: stream,
-          temperature: cfg.temperature, max_tokens: cfg.maxTokens, top_p: cfg.topP };
-      },
-      parseNonStream: function (res) {
-        try { return res.choices[0].message.content || ''; } catch (e) { return ''; }
-      }
-    },
-    anthropic: {
-      modelsPaths: function () { return ['/v1/models', '/models']; },
-      chatPath: function () { return '/v1/messages'; },
-      headers: function (t) {
-        var h = { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' };
-        if (t) h['x-api-key'] = t;
-        return h;
-      },
-      parseModels: function (res) {
-        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id; }).filter(Boolean);
-        return [];
-      },
-      requestBody: function (model, messages, cfg, stream) {
-        var sys = '', rest = [];
-        messages.forEach(function (m) {
-          if (m.role === 'system') sys += (sys ? '\n' : '') + m.content;
-          else rest.push({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content });
-        });
-        var b = { model: model, messages: rest, stream: stream,
-          max_tokens: cfg.maxTokens, temperature: cfg.temperature, top_p: cfg.topP };
-        if (sys) b.system = sys;
-        return b;
-      },
-      parseNonStream: function (res) {
-        try {
-          return (res.content || []).map(function (b) { return b.text || ''; }).join('');
-        } catch (e) { return ''; }
-      }
-    },
-    custom: {
-      modelsPaths: function () { return [state.config.customModelsPath || '/models']; },
-      chatPath: function () { return state.config.customChatPath || '/chat'; },
-      headers: function (t) {
-        var h = { 'Content-Type': 'application/json' };
-        if (t) h.Authorization = 'Bearer ' + t;
-        return h;
-      },
-      parseModels: function (res) {
-        if (Array.isArray(res)) return res.map(function (m) { return m.id || m.name || String(m); });
-        if (res && Array.isArray(res.data)) return res.data.map(function (m) { return m.id || m; });
-        if (res && Array.isArray(res.models)) return res.models.map(function (m) { return m.id || m.name || String(m); });
-        return [];
-      },
-      requestBody: function (model, messages, cfg, stream) {
-        return { model: model, messages: messages, stream: stream,
-          temperature: cfg.temperature, max_tokens: cfg.maxTokens, top_p: cfg.topP };
-      },
-      parseNonStream: function (res) {
-        return res.content || res.message || res.text || res.output || JSON.stringify(res);
-      }
-    }
-  };
-
-  /* SSE parsing — buffered, handles split chunks and both vendors */
-  function createSSEParser(format) {
-    var buf = '';
-    return {
-      push: function (text) {
-        buf += text;
-        var out = '';
-        var idx;
-        while ((idx = buf.indexOf('\n\n')) !== -1) {
-          var event = buf.slice(0, idx);
-          buf = buf.slice(idx + 2);
-          var lines = event.split('\n');
-          for (var i = 0; i < lines.length; i++) {
-            var line = lines[i].trim();
-            if (line.indexOf('data:') !== 0) continue;
-            var data = line.slice(5).trim();
-            if (!data || data === '[DONE]') continue;
-            try {
-              var j = JSON.parse(data);
-              if (format === 'anthropic') {
-                if (j.type === 'content_block_delta' && j.delta && j.delta.text) out += j.delta.text;
-                else if (j.delta && j.delta.text) out += j.delta.text;
-              } else {
-                if (j.choices && j.choices[0]) {
-                  var c = j.choices[0];
-                  if (c.delta && typeof c.delta.content === 'string') out += c.delta.content;
-                  else if (typeof c.text === 'string') out += c.text;
-                  else if (c.message && c.message.content) out += c.message.content;
-                } else if (typeof j.content === 'string') out += j.content;
-                else if (typeof j.text === 'string') out += j.text;
-                else if (typeof j.token === 'string') out += j.token;
-              }
-            } catch (e) { /* partial JSON — wait for more */ }
-          }
-        }
-        return out;
-      },
-      flush: function () {
-        var rest = buf.trim(); buf = '';
-        if (!rest || rest === '[DONE]') return '';
-        if (rest.indexOf('data:') === 0) rest = rest.slice(5).trim();
-        try {
-          var j = JSON.parse(rest);
-          if (j.choices && j.choices[0] && j.choices[0].delta) return j.choices[0].delta.content || '';
-        } catch (e) {}
-        return '';
-      }
-    };
-  }
-
-  /* ═══════════ markdown-lite renderer ═══════════ */
-  function renderMarkdown(src) {
-    var text = String(src == null ? '' : src);
-    var blocks = [];
-    // extract fenced code blocks first
-    text = text.replace(/```(\w*)\n?([\s\S]*?)(?:```|$)/g, function (_, lang, code) {
-      blocks.push({ lang: (lang || 'plaintext').toLowerCase(), code: code.replace(/\n$/, '') });
-      return '\u0000BLOCK' + (blocks.length - 1) + '\u0000';
-    });
-    var html = esc(text);
-    html = html
-      .replace(/^### (.*)$/gm, '<strong>$1</strong>')
-      .replace(/^## (.*)$/gm, '<strong>$1</strong>')
-      .replace(/^# (.*)$/gm, '<strong>$1</strong>')
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
-      .replace(/`([^`\n]+)`/g, '<code class="inline">$1</code>')
-      .split(/\n{2,}/).map(function (para) {
-        if (para.indexOf('\u0000BLOCK') !== -1) return para;
-        return '<p>' + para.replace(/\n/g, '<br/>') + '</p>';
-      }).join('');
-    html = html.replace(/\u0000BLOCK(\d+)\u0000/g, function (_, n) {
-      var b = blocks[Number(n)];
-      return '<pre><code class="language-' + esc(b.lang) + '">' + esc(b.code) + '</code></pre>';
-    });
-    return html || '<span class="text-muted"><span class="typing-dot">•</span> <span class="typing-dot">•</span> <span class="typing-dot">•</span></span>';
-  }
-
-  /* ═══════════ chat UI ═══════════ */
-  function bubble(role, content, opts) {
-    opts = opts || {};
-    var wrap = document.createElement('div');
-    wrap.className = 'msg flex gap-2.5 ' + (role === 'user' ? 'justify-end' : 'justify-start');
-    wrap.dataset.msgId = opts.id || '';
-    var inner;
-    if (role === 'user') {
-      inner = '<div class="max-w-[85%] bg-primary/15 border border-primary/25 rounded-xl px-3.5 py-2.5">' +
-        '<div class="msg-body text-sm whitespace-pre-wrap break-words">' + esc(content) + '</div></div>';
-    } else {
-      inner = '<div class="max-w-[85%] bg-panel border border-line rounded-xl px-3.5 py-2.5 w-fit">' +
-        '<div class="msg-body text-sm break-words">' + renderMarkdown(content) + '</div>' +
-        (opts.streaming ? '' : '<button class="copy-btn mt-1.5 text-[11px] text-muted hover:text-slate-200" data-copy>Copy</button>') +
-        '</div>';
-    }
-    wrap.innerHTML = inner;
-    return wrap;
-  }
-
-  function renderConversation() {
-    var conv = activeConv();
-    el.conversation.innerHTML = '';
-    if (!conv.messages.length) {
-      el.conversation.innerHTML =
-        '<div class="h-full flex items-center justify-center py-16 text-center">' +
-        '<div class="max-w-sm space-y-2">' +
-        '<div class="text-3xl">⌁</div>' +
-        '<p class="font-medium">Validate any OpenAI-compatible API</p>' +
-        '<p class="text-xs text-muted">1. Paste base URL + token &nbsp;→&nbsp; 2. Fetch models (or type a model ID manually) &nbsp;→&nbsp; 3. Chat. Streaming, params, and history included.</p>' +
-        '</div></div>';
-      return;
-    }
-    conv.messages.forEach(function (m) {
-      el.conversation.appendChild(bubble(m.role, m.content, { id: m.id }));
-    });
-    highlightNewCode();
-    el.conversation.scrollTop = el.conversation.scrollHeight;
-  }
-
-  function highlightNewCode() {
-    el.conversation.querySelectorAll('pre code:not([data-hl])').forEach(function (code) {
-      try {
-        if (window.hljs) {
-          if (hljs.getLanguage(code.className.replace('language-', ''))) hljs.highlightElement(code);
-          else hljs.highlightElement(code);
-        }
-        code.setAttribute('data-hl', '1');
-      } catch (e) { /* ignore */ }
-    });
-  }
-
-  el.conversation.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-copy]');
-    if (!btn) return;
-    var body = btn.closest('.msg').querySelector('.msg-body');
-    var text = body ? body.innerText : '';
-    navigator.clipboard.writeText(text).then(
-      function () { toast('Copied to clipboard', 'ok'); },
-      function () { toast('Copy failed', 'error'); });
-  });
-
-  /* ═══════════ fetch models ═══════════ */
-  function setFetching(on) {
-    el.fetchModelsBtn.disabled = on;
-    el.fetchModelsBtn.textContent = on ? 'Fetching…' : 'Fetch models';
-  }
-
-  function fetchModels() {
-    var cfg = state.config;
-    var base = normBase(cfg.baseUrl);
-    if (!base) { toast('Enter an API base URL first', 'error'); el.apiBase.focus(); return; }
-    var adapter = adapters[cfg.apiFormat] || adapters.openai;
-    var paths = adapter.modelsPaths();
-
-    setFetching(true);
-    setStatus('busy', 'Fetching models…');
-    el.fetchHint.textContent = '';
-    el.corsBanner.classList.add('hidden');
-
-    var attempt = function (i) {
-      if (i >= paths.length) {
-        setFetching(false);
-        setStatus('err', 'Fetch failed');
-        el.fetchHint.textContent = 'Tried: ' + paths.map(function (p) { return joinUrl(base, p); }).join(' , ');
-        toast('Could not fetch models — you can still type a model ID manually', 'error');
-        return;
-      }
-      var url = joinUrl(base, paths[i]);
-      routeFetch(url, { method: 'GET', headers: adapter.headers(trimmedToken()) }, 'GET models')
-        .then(function (res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
-          return res.json();
-        })
-        .then(function (data) {
-          var models = adapter.parseModels(data);
-          if (!models.length) throw new Error('No models in response — check inspector for shape');
-          populateModels(models);
-          setFetching(false);
-          var via = lastRoute === 'proxy' ? ' via proxy' : '';
-          setStatus('ok', 'Connected' + via + ' · ' + models.length + ' models');
-          el.fetchHint.textContent = models.length + ' models loaded' + via + ' from ' + url;
-          toast(models.length + ' models loaded', 'ok');
-          if (!cfg.model || models.indexOf(cfg.model) === -1) {
-            cfg.model = models[0]; el.modelInput.value = models[0]; save();
-          }
-        })
-        .catch(function (err) {
-          debug({ step: 'GET models FAILED', url: url, error: String(err && err.message || err) });
-          if (isCorsTypeError(err)) {
-            setFetching(false);
-            setStatus('err', 'Blocked by CORS');
-            el.corsBanner.classList.remove('hidden');
-            el.fetchHint.textContent = 'Browser blocked the request (CORS). Type a model ID manually to still try chat.';
-            toast('CORS blocked — manual model entry still works', 'error');
-            return;
-          }
-          if (i + 1 < paths.length) { attempt(i + 1); return; }
-          setFetching(false);
-          setStatus('err', 'Fetch failed');
-          el.fetchHint.textContent = String(err.message || err);
-          toast('Fetch failed: ' + (err.message || err), 'error');
-        });
-    };
-    attempt(0);
-  }
-
-  /* ═══════════ model combobox ═══════════ */
-  var allModels = [];
-  var modelMatches = [];
-  var modelActive = -1;
-
-  function populateModels(models) {
-    allModels = models;
-    el.modelCount.textContent = models.length + ' models — click the field to browse, type to filter';
-    if (!el.modelDropdown.classList.contains('hidden')) renderModelOptions();
-  }
-
-  function renderModelOptions() {
-    var q = el.modelInput.value.trim().toLowerCase();
-    modelMatches = q ? allModels.filter(function (m) { return String(m).toLowerCase().indexOf(q) !== -1; }) : allModels.slice();
-    if (modelActive >= modelMatches.length) modelActive = -1;
-    if (!modelMatches.length) {
-      el.modelDropdown.innerHTML = '<div class="px-2.5 py-1.5 text-xs text-muted">' +
-        (allModels.length ? 'No model matches the typed text — pressing Enter uses it as-is' : 'No models loaded — fetch models or type an ID') +
-        '</div>';
-      el.modelInput.removeAttribute('aria-activedescendant');
-      return;
-    }
-    el.modelDropdown.innerHTML = modelMatches.map(function (m, i) {
-      return '<div role="option" id="modelOpt' + i + '" data-model="' + esc(m) + '" aria-selected="' + (i === modelActive) + '" ' +
-        'class="mono text-sm px-2.5 py-1.5 mx-1 rounded cursor-pointer truncate ' + (i === modelActive ? 'bg-line' : 'hover:bg-line') + '">' +
-        esc(m) + '</div>';
-    }).join('');
-    if (modelActive >= 0) el.modelInput.setAttribute('aria-activedescendant', 'modelOpt' + modelActive);
-    else el.modelInput.removeAttribute('aria-activedescendant');
-  }
-
-  function positionModelDropdown() {
-    var r = el.modelInput.getBoundingClientRect();
-    var spaceBelow = window.innerHeight - r.bottom;
-    var dropUp = spaceBelow < 250 && r.top > spaceBelow;
-    el.modelDropdown.style.top = dropUp ? 'auto' : 'calc(100% + 4px)';
-    el.modelDropdown.style.bottom = dropUp ? 'calc(100% + 4px)' : 'auto';
-    el.modelDropdown.style.maxHeight = Math.max(120, Math.min(240, (dropUp ? r.top : spaceBelow) - 12)) + 'px';
-  }
-
-  function openModelDropdown() {
-    el.modelDropdown.classList.remove('hidden');
-    el.modelInput.setAttribute('aria-expanded', 'true');
-    positionModelDropdown();
-    renderModelOptions();
-  }
-  function closeModelDropdown() {
-    el.modelDropdown.classList.add('hidden');
-    el.modelInput.setAttribute('aria-expanded', 'false');
-    el.modelInput.removeAttribute('aria-activedescendant');
-    modelActive = -1;
-  }
-  function isModelDropdownOpen() { return !el.modelDropdown.classList.contains('hidden'); }
-
-  function setModelActive(i) {
-    modelActive = Math.max(-1, Math.min(i, modelMatches.length - 1));
-    renderModelOptions();
-    var node = modelActive >= 0 && el.modelDropdown.querySelector('#modelOpt' + modelActive);
-    if (node) node.scrollIntoView({ block: 'nearest' });
-  }
-
-  function selectModel(m) {
-    var cfg = state.config;
-    el.modelInput.value = m;
-    cfg.model = m;
-    save();
-    closeModelDropdown();
-    el.modelInput.focus();
-  }
-
-  function populateModelsFromGeneric() {
-    allModels = GENERIC_MODELS.slice();
-    el.modelCount.textContent = 'No models fetched — type an ID or click Fetch models';
-  }
-
-  /* ═══════════ send chat ═══════════ */
-  function setBusy(on) {
-    isStreaming = on;
-    el.sendBtn.disabled = on;
-    el.sendBtn.textContent = on ? 'Sending…' : 'Send';
-    el.stopBtn.classList.toggle('hidden', !on);
-  }
-
-  function sendMessage() {
-    var text = el.composer.value.trim();
-    if (!text || isStreaming) return;
-    var cfg = state.config;
-    var base = normBase(cfg.baseUrl);
-    if (!base) { toast('Enter an API base URL first', 'error'); el.apiBase.focus(); return; }
-    if (!cfg.model) { toast('Enter a model ID (fetch or type manually)', 'error'); el.modelInput.focus(); return; }
-
-    var conv = activeConv();
-    var userMsg = { id: 'm_' + Date.now().toString(36), role: 'user', content: text, ts: new Date().toISOString() };
-    conv.messages.push(userMsg);
-    if (conv.messages.length === 1) conv.title = text.slice(0, 48);
-    save();
-
-    el.composer.value = '';
-    autoGrow();
-    renderConversation();
-
-    var adapter = adapters[cfg.apiFormat] || adapters.openai;
-    var url = joinUrl(base, adapter.chatPath());
-    var history = [{ role: 'system', content: cfg.systemPrompt }].concat(
-      conv.messages.filter(function (m) { return m.content && !m.error; }).map(function (m) {
-        return { role: m.role, content: m.content };
-      })
-    );
-    var body = adapter.requestBody(cfg.model, history, cfg, cfg.stream);
-
-    var assistId = 'm_' + (Date.now() + 1).toString(36);
-    var assistNode = bubble('assistant', '', { id: assistId, streaming: true });
-    el.conversation.appendChild(assistNode);
-    el.conversation.scrollTop = el.conversation.scrollHeight;
-    var assistBody = assistNode.querySelector('.msg-body');
-
-    setBusy(true);
-    setStatus('busy', cfg.stream ? 'Streaming…' : 'Requesting…');
-    aborter = new AbortController();
-    debug({ step: 'POST chat', url: url, format: cfg.apiFormat, body: body });
-
-    routeFetch(url, {
-      method: 'POST',
-      headers: adapter.headers(trimmedToken()),
-      body: JSON.stringify(body),
-      signal: aborter.signal
-    }, 'POST chat').then(function (res) {
-      if (!res.ok) {
-        return res.text().then(function (t) {
-          debug({ step: 'HTTP ' + res.status + ' — raw response', url: url, body: t.slice(0, 2000) });
-          throw new Error(friendlyHttp(res.status) + ' — raw response in the debug inspector');
-        });
-      }
-      var ctype = (res.headers.get('content-type') || '').toLowerCase();
-      if (!cfg.stream || !res.body || ctype.indexOf('text/event-stream') === -1) {
-        var isJson = ctype.indexOf('json') !== -1;
-        return (isJson ? res.json() : res.text()).then(function (data) {
-          var content = (typeof data === 'string') ? data : adapter.parseNonStream(data);
-          assistBody.innerHTML = renderMarkdown(content);
-          highlightNewCode();
-          finishAssistant(conv, assistId, assistNode, content || '(empty response)');
-        });
-      }
-      var reader = res.body.getReader();
-      var decoder = new TextDecoder();
-      var parser = createSSEParser(cfg.apiFormat);
-      var full = '';
-      var pump = function () {
-        return reader.read().then(function (r) {
-          if (r.done) {
-            full += parser.flush();
-            assistBody.innerHTML = renderMarkdown(full);
-            highlightNewCode();
-            finishAssistant(conv, assistId, assistNode, full || '(empty response)');
-            return;
-          }
-          var delta = parser.push(decoder.decode(r.value, { stream: true }));
-          if (delta) {
-            full += delta;
-            assistBody.innerHTML = renderMarkdown(full);
-            highlightNewCode();
-            el.conversation.scrollTop = el.conversation.scrollHeight;
-          }
-          return pump();
-        });
-      };
-      return pump();
-    }).catch(function (err) {
-      var msg;
-      if (err && err.name === 'AbortError') msg = 'Stopped by user.';
-      else       if (isCorsTypeError(err)) {
-        msg = 'Blocked by CORS — the API refused this browser origin. Same-origin proxy also failed; check the API base URL.';
-        el.corsBanner.classList.remove('hidden');
-      } else msg = 'Error: ' + (err.message || err);
-      debug({ step: 'POST chat FAILED', url: url, error: String((err && err.message) || err) });
-      assistBody.innerHTML = renderMarkdown(msg);
-      finishAssistant(conv, assistId, assistNode, msg, true);
-      setStatus('err', 'Request failed');
-      toast(msg.slice(0, 120), 'error');
-    });
-  }
-
-  function finishAssistant(conv, id, node, content, isError) {
-    conv.messages.push({ id: id, role: 'assistant', content: content, ts: new Date().toISOString(), error: !!isError });
-    save();
-    setBusy(false);
-    if (!isError) setStatus('ok', 'Connected' + (lastRoute === 'proxy' ? ' via proxy' : '') + ' · ' + state.config.model);
-    // replace streaming node with final node (adds Copy button)
-    var final = bubble('assistant', content, { id: id });
-    node.replaceWith(final);
-    highlightNewCode();
-    el.conversation.scrollTop = el.conversation.scrollHeight;
-  }
-
-  /* ═══════════ composer ═══════════ */
-  function autoGrow() {
-    el.composer.style.height = 'auto';
-    el.composer.style.height = Math.min(el.composer.scrollHeight, 192) + 'px';
-  }
-
-  /* ═══════════ wiring ═══════════ */
-  function bindConfig() {
-    var cfg = state.config;
-    var sync = function () { save(); };
-
-    el.apiBase.addEventListener('input', function () { cfg.baseUrl = el.apiBase.value; sync(); });
-    el.apiToken.addEventListener('input', function () { cfg.token = el.apiToken.value; sync(); });
-    el.apiToken.addEventListener('blur', function () {
-      var t = el.apiToken.value.trim();
-      if (t !== el.apiToken.value) { el.apiToken.value = t; cfg.token = t; sync(); }
-    });
-    el.forgetToken.addEventListener('click', function () {
-      cfg.token = ''; el.apiToken.value = ''; save();
-      toast('Token cleared from this browser', 'info');
-    });
-    el.tokenPeek.addEventListener('click', function () {
-      var show = el.apiToken.type === 'password';
-      el.apiToken.type = show ? 'text' : 'password';
-      el.tokenPeek.textContent = show ? 'Hide' : 'Show';
-    });
-    el.apiFormat.addEventListener('change', function () {
-      cfg.apiFormat = el.apiFormat.value;
-      el.customEndpoints.classList.toggle('hidden', cfg.apiFormat !== 'custom');
-      sync();
-    });
-    el.customModelsPath.addEventListener('input', function () { cfg.customModelsPath = el.customModelsPath.value; sync(); });
-    el.customChatPath.addEventListener('input', function () { cfg.customChatPath = el.customChatPath.value; sync(); });
-    el.proxyMode.addEventListener('change', function () { cfg.proxyMode = el.proxyMode.value; sync(); });
-    el.proxyUrl.addEventListener('input', function () { cfg.proxyUrl = el.proxyUrl.value.trim(); sync(); });
-    el.modelInput.addEventListener('input', function () { cfg.model = el.modelInput.value.trim(); sync(); if (isModelDropdownOpen()) renderModelOptions(); });
-    el.modelInput.addEventListener('focus', openModelDropdown);
-    el.modelInput.addEventListener('click', openModelDropdown);
-    el.modelInput.addEventListener('blur', closeModelDropdown);
-    el.modelInput.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (!isModelDropdownOpen()) openModelDropdown();
-        else setModelActive(modelActive + 1);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (isModelDropdownOpen()) setModelActive(modelActive - 1);
-      } else if (e.key === 'Enter') {
-        if (isModelDropdownOpen() && modelActive >= 0) { e.preventDefault(); selectModel(modelMatches[modelActive]); }
-        else closeModelDropdown();
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        closeModelDropdown();
-        el.modelInput.blur();
-      }
-    });
-    el.modelToggle.addEventListener('mousedown', function (e) { e.preventDefault(); });
-    el.modelToggle.addEventListener('click', function () {
-      if (isModelDropdownOpen()) { closeModelDropdown(); el.modelInput.focus(); }
-      else { el.modelInput.focus(); openModelDropdown(); }
-    });
-    el.modelDropdown.addEventListener('mousedown', function (e) {
-      var opt = e.target.closest('[data-model]');
-      if (!opt) return;
-      e.preventDefault();
-      selectModel(opt.dataset.model);
-    });
-    document.addEventListener('mousedown', function (e) {
-      if (isModelDropdownOpen() && !el.modelCombo.contains(e.target)) closeModelDropdown();
-    });
-    el.systemPrompt.addEventListener('input', function () { cfg.systemPrompt = el.systemPrompt.value; sync(); });
-
-    el.temp.addEventListener('input', function () {
-      cfg.temperature = parseFloat(el.temp.value); el.tempVal.textContent = cfg.temperature.toFixed(2); sync();
-    });
-    el.maxTokens.addEventListener('input', function () {
-      cfg.maxTokens = parseInt(el.maxTokens.value, 10); el.tokensVal.textContent = String(cfg.maxTokens); sync();
-    });
-    el.topP.addEventListener('input', function () {
-      cfg.topP = parseFloat(el.topP.value); el.topPVal.textContent = cfg.topP.toFixed(2); sync();
-    });
-    el.streamToggle.addEventListener('change', function () { cfg.stream = el.streamToggle.checked; sync(); });
-
-    el.fetchModelsBtn.addEventListener('click', fetchModels);
-    el.sendBtn.addEventListener('click', sendMessage);
-    el.stopBtn.addEventListener('click', function () { if (aborter) aborter.abort(); });
-    el.composer.addEventListener('input', autoGrow);
-    el.composer.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); sendMessage(); }
-    });
-
-    el.newChatBtn.addEventListener('click', function () {
-      var c = { id: 'c_' + Date.now().toString(36), title: 'New chat', messages: [], createdAt: new Date().toISOString() };
-      state.conversations.unshift(c);
-      state.activeId = c.id;
-      save(); renderConversation();
-      toast('New chat started', 'info');
-    });
-    el.exportBtn.addEventListener('click', function () {
-      var conv = activeConv();
-      var blob = new Blob([JSON.stringify(conv, null, 2)], { type: 'application/json' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'chat-' + conv.id + '.json';
-      a.click();
-      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
-    });
-    el.importFile.addEventListener('change', function () {
-      var f = el.importFile.files[0];
-      if (!f) return;
-      var r = new FileReader();
-      r.onload = function () {
-        try {
-          var conv = JSON.parse(r.result);
-          if (!conv.messages) throw new Error('bad file');
-          conv.id = 'c_' + Date.now().toString(36);
-          state.conversations.unshift(conv);
-          state.activeId = conv.id;
-          save(); renderConversation();
-          toast('Conversation imported', 'ok');
-        } catch (e) { toast('Import failed: invalid JSON', 'error'); }
-      };
-      r.readAsText(f);
-      el.importFile.value = '';
-    });
-
-    el.corsDismiss.addEventListener('click', function () { el.corsBanner.classList.add('hidden'); });
-    el.themeBtn.addEventListener('click', function () {
-      document.documentElement.classList.toggle('dark');
-    });
-    el.sidebarToggle.addEventListener('click', function () {
-      el.sidebar.classList.toggle('hidden');
-      el.scrim.classList.toggle('hidden');
-    });
-    el.scrim.addEventListener('click', function () {
-      el.sidebar.classList.add('hidden');
-      el.scrim.classList.add('hidden');
-    });
-  }
-
-  function paintConfig() {
-    var cfg = state.config;
-    el.apiBase.value = cfg.baseUrl || '';
-    el.apiToken.value = cfg.token || '';
-    el.apiFormat.value = cfg.apiFormat || 'openai';
-    el.customEndpoints.classList.toggle('hidden', el.apiFormat.value !== 'custom');
-    el.customModelsPath.value = cfg.customModelsPath || '/models';
-    el.customChatPath.value = cfg.customChatPath || '/chat';
-    el.proxyMode.value = cfg.proxyMode || 'auto';
-    el.proxyUrl.value = cfg.proxyUrl || '';
-    el.modelInput.value = cfg.model || '';
-    el.systemPrompt.value = cfg.systemPrompt || '';
-    el.temp.value = cfg.temperature;
-    el.tempVal.textContent = Number(cfg.temperature).toFixed(2);
-    el.maxTokens.value = cfg.maxTokens;
-    el.tokensVal.textContent = String(cfg.maxTokens);
-    el.topP.value = cfg.topP;
-    el.topPVal.textContent = Number(cfg.topP).toFixed(2);
-    el.streamToggle.checked = cfg.stream !== false;
-    populateModelsFromGeneric();
-    if (cfg.model) {
-      allModels = [cfg.model].concat(allModels.filter(function (m) { return m !== cfg.model; }));
-      el.modelCount.textContent = 'Current model: ' + cfg.model + ' — Fetch models for the full list';
-    }
-  }
-
-  /* ═══════════ init ═══════════ */
-  load();
-  activeConv();
-  bindConfig();
-  paintConfig();
-  renderConversation();
-  autoGrow();
-  setStatus('idle', state.config.baseUrl ? 'Configured — fetch models' : 'Not connected');
+  setStatus('idle', state.config.baseUrl ? 'Configured ? fetch models' : 'Not connected');
 })();
 </script>
 </body>
