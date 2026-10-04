@@ -1,0 +1,16 @@
+node_modules/
+*.local.json
+*.backup
+_*.js
+_*.py
+patch_*
+apply_all.py
+out.txt
+metafoot.txt
+patch_test.txt
+slice.txt
+snippet.txt
+.qoder/
+_*.html
+*.cjs
+patch.js
